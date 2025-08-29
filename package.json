@@ -1,0 +1,45 @@
+{
+  "name": "sitnikov-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.0.1",
+    "@sanity/client": "^7.4.0",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "framer-motion": "^12.17.0",
+    "groq": "^3.90.0",
+    "motion": "^12.12.2",
+    "nanoid": "^5.1.5",
+    "next": "15.1.8",
+    "next-intl": "^4.1.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.56.4",
+    "react-spinners": "^0.17.0",
+    "swiper": "^11.2.8",
+    "tailwind-merge": "^2.6.0",
+    "zod": "^3.25.47"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@ianvs/prettier-plugin-sort-imports": "^4.4.1",
+    "@tailwindcss/line-clamp": "^0.4.4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.1.8",
+    "postcss": "^8",
+    "prettier": "^3.5.3",
+    "prettier-plugin-tailwindcss": "^0.6.11",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}
