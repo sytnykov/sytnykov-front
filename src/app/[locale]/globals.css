@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --light: #ffffff;
+  --dark: #091129;
+  --dark-light: #3a3a3a;
+  --accent: #5188ff;
+}
+
+:root:has(.no-doc-scroll) {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+
+body {
+  color: var(--dark);
+  background: var(--light);
+  font-family: "Montserrat", Arial, Helvetica, sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.22;
+  letter-spacing: 0;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.default-transition {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+.link-transition {
+  @apply transition-colors duration-300 ease-in-out hover:text-accent focus:text-accent;
+}
+
+.gradient-border {
+  border: 1px solid;
+  border-image-slice: 1;
+  border-image-source: linear-gradient(
+    101.82deg,
+    #eaebff 42.86%,
+    #091129 110.85%
+  );
+  border-radius: 8px;
+}
+
+/* Fonts */
+@font-face {
+  font-family: "Micra";
+  src: url("/fonts/Micra-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
