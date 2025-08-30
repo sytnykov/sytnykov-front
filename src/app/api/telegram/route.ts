@@ -23,7 +23,7 @@ export async function POST(req: Request): Promise<Response> {
 
     let text = `
 💬 ${messageFrom}: 
-👤 Им'я: ${name}
+👤 Ім'я: ${name}
 📞 Телефон: ${phone}
 📝 Повідомлення: ${message || "-"}
     `.trim();

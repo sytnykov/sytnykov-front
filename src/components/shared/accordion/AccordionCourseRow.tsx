@@ -40,22 +40,25 @@ const AccordionCourseRow = ({
         <button
           type="button"
           onClick={onClick}
-          className="flex w-full items-center justify-between gap-6 text-left text-[14px] font-medium transition-transform xl:text-[20px]"
+          disabled={!tags}
+          className={`flex w-full items-center justify-between gap-6 text-left text-[14px] font-medium transition-transform xl:text-[20px]`}
         >
           {title[lang]}
 
-          <div
-            className={cn(
-              "flex size-12 shrink-0 items-center justify-center rounded-lg bg-light text-dark xl:size-[70px]"
-            )}
-          >
-            <ArrowInCircleIcon
+          {tags ? (
+            <div
               className={cn(
-                "h-[31px] w-[31px] transition-transform",
-                isOpen ? "-rotate-90" : "rotate-0"
+                "flex size-12 shrink-0 items-center justify-center rounded-lg bg-light text-dark xl:size-[70px]"
               )}
-            />
-          </div>
+            >
+              <ArrowInCircleIcon
+                className={cn(
+                  "h-[31px] w-[31px] transition-transform",
+                  isOpen ? "-rotate-90" : "rotate-0"
+                )}
+              />
+            </div>
+          ) : null}
         </button>
 
         <div

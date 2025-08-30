@@ -54,7 +54,14 @@ const FormField = ({
       <input
         type={type}
         placeholder={placeholder}
-        {...register(name, required ? { required: "Обов’язкове поле" } : {})}
+        {...register(name, {
+          required: required ? "Обов’язкове поле" : false,
+          ...(type === "tel"
+            ? {
+                setValueAs: (v: string) => (v ? v.replace(/\D/g, "") : ""), // лишає тільки цифри
+              }
+            : {}),
+        })}
         className={cn(inputStyles)}
       />
       {fieldError && (
