@@ -11,6 +11,7 @@ import "./globals.css";
 
 import Footer from "@/components/module/footer/Footer";
 import Header from "@/components/module/header/Header";
+import SplashGate from "@/components/shared/splashScreen/SplashGate";
 
 export const metadata: Metadata = {
   title: "Консалтинг - Олександр Ситников",
@@ -42,12 +43,14 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} className="scroll-smooth">
       <body
-        className={`${montserrat.variable}relative z-[1] flex min-h-screen flex-col antialiased`}
+        className={`${montserrat.variable} relative z-[1] flex min-h-screen flex-col antialiased`}
       >
         <NextIntlClientProvider messages={messages}>
-          <Header />
-          <main className="flex-grow overflow-x-hidden">{children}</main>
-          <Footer />
+          <SplashGate>
+            <Header />
+            <main className="flex-grow overflow-x-hidden">{children}</main>
+            <Footer />
+          </SplashGate>
         </NextIntlClientProvider>
       </body>
     </html>
