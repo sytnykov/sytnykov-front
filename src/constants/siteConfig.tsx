@@ -39,7 +39,7 @@ export const siteConfig = {
   ],
 
   cyanidium: {
-    url: "https://www.cyanidium.dev/",
-    name: "cyanidium.dev",
+    url: "https://www.code-site.art/",
+    name: "Code-site.art",
   },
 };

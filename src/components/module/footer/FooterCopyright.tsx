@@ -2,6 +2,8 @@ import { useTranslations } from "next-intl";
 
 import { siteConfig } from "@/constants/siteConfig";
 
+import TagIcon from "./TagIcon";
+
 const FooterCopyright = () => {
   const t = useTranslations("footer");
 
@@ -12,15 +14,15 @@ const FooterCopyright = () => {
       <p className="leading-[28.8px]">
         &copy; {year} {t("companyName")}
       </p>
-      <p className="leading-[28.8px]">
+      <p className="flex items-center gap-3 leading-[28.8px]">
         {t("copyright")}{" "}
         <a
           href={siteConfig.cyanidium.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="link-transition"
+          className="link-transition flex gap-2 uppercase"
         >
-          {siteConfig.cyanidium.name}
+          {siteConfig.cyanidium.name} <TagIcon className="mt-0.5" />
         </a>
       </p>
     </div>
