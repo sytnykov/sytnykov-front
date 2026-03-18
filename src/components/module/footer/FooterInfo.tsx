@@ -1,5 +1,7 @@
 import { getTranslations } from "next-intl/server";
 
+import { ROUTES } from "@/constants/routes";
+
 import MenuLink from "../header/MenuLink";
 
 const FooterInfo = async () => {
@@ -10,7 +12,8 @@ const FooterInfo = async () => {
     { title: tInfo("legalDetails"), path: "#" },
     { title: tInfo("ie"), path: "#" },
     { title: tInfo("offer"), path: "#" },
-    { title: tInfo("privacy"), path: "#" },
+    { title: tInfo("privacy"), path: ROUTES.PRIVACY },
+    { title: tInfo("terms"), path: ROUTES.TERMS },
   ];
 
   return (
