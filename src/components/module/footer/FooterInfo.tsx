@@ -9,9 +9,9 @@ const FooterInfo = async () => {
   const tInfo = await getTranslations("footer.information");
 
   const menuList = [
-    { title: tInfo("legalDetails"), path: "#" },
-    { title: tInfo("ie"), path: "#" },
-    { title: tInfo("offer"), path: "#" },
+    // { title: tInfo("legalDetails"), path: "#" },
+    // { title: tInfo("ie"), path: "#" },
+    // { title: tInfo("offer"), path: "#" },
     { title: tInfo("privacy"), path: ROUTES.PRIVACY },
     { title: tInfo("terms"), path: ROUTES.TERMS },
   ];
