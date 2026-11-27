@@ -5,7 +5,8 @@ import Logo from "@/components/shared/logo/Logo";
 import { Link } from "@/i18n/navigation";
 import { LEGAL_PAGES, legalPath } from "@/constants/legal";
 import { ROUTES } from "@/constants/routes";
-import { siteConfig } from "@/constants/siteConfig";
+import { getSiteContacts } from "@/lib/siteSettings";
+import GoogleReviewsLink from "@/components/shared/GoogleReviewsLink";
 
 const formatPhone = (phone: string) => {
   const d = phone.replace(/\D/g, "");
@@ -39,6 +40,7 @@ const Label = ({ children }: { children: string }) => (
 
 const Footer = async () => {
   const t = await getTranslations("footer");
+  const contacts = await getSiteContacts();
   const tLegal = await getTranslations("legal");
   const year = new Date().getFullYear();
 
@@ -51,8 +53,8 @@ const Footer = async () => {
     { title: t("navigation.gallery"), path: ROUTES.GALLERY },
     { title: t("navigation.contacts"), path: ROUTES.CONTACTS },
   ];
-  const socials = siteConfig.socialLinks.filter(({ href }) => href !== "#");
-  const telHref = `tel:+${siteConfig.phone.replace(/\D/g, "")}`;
+  const socials = contacts.socialLinks.filter(({ href }) => href !== "#");
+  const telHref = `tel:+${contacts.phone.replace(/\D/g, "")}`;
 
   return (
     <footer className="bg-[#f3f6fd] md:px-6 md:pb-6">
@@ -117,13 +119,13 @@ const Footer = async () => {
                 href={telHref}
                 className="block text-[26px] font-semibold tabular-nums leading-tight tracking-[-0.02em] transition-colors duration-300 hover:text-accent md:text-[30px]"
               >
-                {formatPhone(siteConfig.phone)}
+                {formatPhone(contacts.phone)}
               </a>
               <a
-                href={`mailto:${siteConfig.email}`}
+                href={`mailto:${contacts.email}`}
                 className="mt-2 block text-[17px] font-medium text-white/85 transition-colors duration-300 hover:text-accent md:text-[20px]"
               >
-                {siteConfig.email}
+                {contacts.email}
               </a>
               <p className="mt-3 text-[14px] text-white/55">
                 {t("address")} · {t("hours")}
@@ -145,6 +147,11 @@ const Footer = async () => {
                   ))}
                 </ul>
               )}
+              <GoogleReviewsLink
+                href={contacts.googleReviewsUrl}
+                label={t("googleReviews")}
+                className="mt-4 text-[14px] font-medium text-white/80 transition-colors duration-300 hover:text-light xl:justify-end"
+              />
             </div>
 
             {/* who + main action */}

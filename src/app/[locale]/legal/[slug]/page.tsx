@@ -10,7 +10,7 @@ import RenderContent from "@/components/shared/renderContent/RenderContent";
 import { Link } from "@/i18n/navigation";
 import { getLegalPage } from "@/lib/sanity/queries/legal";
 import { LEGAL_PAGES, LegalSlug, legalPath } from "@/constants/legal";
-import { siteConfig } from "@/constants/siteConfig";
+import { getSiteContacts } from "@/lib/siteSettings";
 import { IS_PREVIEW } from "@/utils/env";
 import { generatePageMetadata } from "@/utils/generatePageMetaData";
 import { Locale } from "@/types/locale";
@@ -60,6 +60,7 @@ const LegalPage = async ({ params }: { params: Params }) => {
   if (!isLegalSlug(slug)) notFound();
 
   const t = await getTranslations({ locale, namespace: "legal" });
+  const contacts = await getSiteContacts();
   const doc = await getLegalPage(slug);
   const content = doc?.content?.[locale]?.length
     ? doc.content[locale]
@@ -127,10 +128,10 @@ const LegalPage = async ({ params }: { params: Params }) => {
               <p>
                 {PENDING[locale] ?? PENDING.uk}{" "}
                 <a
-                  href={`mailto:${siteConfig.email}`}
+                  href={`mailto:${contacts.email}`}
                   className="text-accent underline underline-offset-4"
                 >
-                  {siteConfig.email}
+                  {contacts.email}
                 </a>
               </p>
             ) : (
