@@ -25,10 +25,14 @@ const META_EVENTS: Record<string, string> = {
   click_email: "Contact",
 };
 
+/** Fired on window after every track(): the GTM loader starts on it. */
+export const TRACK_EVENT = "sitnikov:track";
+
 export const track = (event: string, params: EventParams = {}) => {
   if (typeof window === "undefined") return;
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({ event, ...params });
+  window.dispatchEvent(new Event(TRACK_EVENT));
   const meta = META_EVENTS[event];
   if (meta && window.fbq) {
     const { value, currency } = params;

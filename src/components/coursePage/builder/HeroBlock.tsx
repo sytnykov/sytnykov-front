@@ -151,6 +151,7 @@ const HeroBlock = async ({ block, ctx }: { block?: Hero; ctx: BlockCtx }) => {
               alt={courseTitle}
               fill
               priority
+              fetchPriority="high"
               sizes="(min-width: 1280px) 460px, (min-width: 768px) 40vw, 92vw"
               className="object-cover"
             />

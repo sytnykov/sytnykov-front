@@ -2,18 +2,23 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale } from "next-intl";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 
 import { cn } from "@/utils/cn";
-import { AnimatePresence, motion } from "framer-motion";
 
 import { usePathname, useRouter } from "@/i18n/navigation";
-import { routing } from "@/i18n/routing";
 import { Locale } from "@/types/locale";
+
+const loadLocaleMenu = () => import("./LocaleMenu");
+// the list (and its animation library) is fetched on first use
+const LocaleMenu = dynamic(loadLocaleMenu, { ssr: false });
 
 const LocaleSwitcher = () => {
   const [isOpen, setIsOpen] = useState(false);
+  // stays true after the first opening so the closing animation can play
+  const [wasOpened, setWasOpened] = useState(false);
 
   const currentLocale = useLocale();
   const pathName = usePathname();
@@ -21,7 +26,6 @@ const LocaleSwitcher = () => {
   const searchParams = useSearchParams();
 
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const locales = routing.locales;
 
   const handleLocaleChange = (newLocale: Locale) => {
     const hash = window.location.hash;
@@ -66,7 +70,12 @@ const LocaleSwitcher = () => {
   return (
     <div className="relative" ref={dropdownRef}>
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          setWasOpened(true);
+          setIsOpen(!isOpen);
+        }}
+        onPointerEnter={loadLocaleMenu}
+        onFocus={loadLocaleMenu}
         className="flex items-center gap-2 px-3 py-2 outline-none"
       >
         <span className="text-light font-bold leading-tight">
@@ -84,35 +93,13 @@ const LocaleSwitcher = () => {
         />
       </button>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            className="bg-light absolute right-0 z-50 mt-1 w-[65px] rounded-[8px] shadow-md"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-          >
-            {locales.map(locale => (
-              <button
-                key={locale}
-                onClick={() => handleLocaleChange(locale)}
-                className={`flex w-full items-center px-4 py-2`}
-              >
-                <span
-                  className={` ${
-                    currentLocale === locale
-                      ? "text-accent text-14med xl:text-16med"
-                      : "text-14reg xl:text-16reg text-dark"
-                  }`}
-                >
-                  {locale === "uk" ? "UA" : "RU"}
-                </span>
-              </button>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {wasOpened && (
+        <LocaleMenu
+          isOpen={isOpen}
+          currentLocale={currentLocale}
+          onSelect={handleLocaleChange}
+        />
+      )}
     </div>
   );
 };

@@ -13,6 +13,7 @@ import "./globals.css";
 import Analytics from "@/components/module/analytics/Analytics";
 import LeadTracker from "@/components/module/analytics/LeadTracker";
 import CookieBanner from "@/components/module/cookies/CookieBanner";
+import { cookieChoiceScript } from "@/components/module/cookies/consent";
 import Footer from "@/components/module/footer/Footer";
 import Header from "@/components/module/header/Header";
 import JsonLd from "@/components/seo/JsonLd";
@@ -72,7 +73,7 @@ export default async function LocaleLayout({
   } as typeof all;
 
   return (
-    <html lang={locale} className="scroll-smooth">
+    <html lang={locale} className="scroll-smooth" suppressHydrationWarning>
       <body
         className={`${montserrat.variable} ${micra.variable} relative z-[1] flex min-h-screen flex-col antialiased`}
       >
@@ -80,6 +81,7 @@ export default async function LocaleLayout({
           <Header />
           <main className="flex-grow overflow-x-hidden">{children}</main>
           <Footer />
+          <script dangerouslySetInnerHTML={{ __html: cookieChoiceScript }} />
           <CookieBanner />
           <Analytics />
           <LeadTracker />

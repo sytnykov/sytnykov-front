@@ -76,6 +76,7 @@ const EducationHero = async () => {
               alt=""
               fill
               priority
+              fetchPriority="high"
               sizes="(min-width: 1280px) 420px, (min-width: 768px) 35vw, 70vw"
               className="object-cover"
             />

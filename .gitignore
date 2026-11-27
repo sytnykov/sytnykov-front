@@ -5,6 +5,9 @@
 /.next/
 /out/
 
+# resized copies of public/images, rebuilt by scripts/optimize-images.mjs
+/public/_opt/
+
 # environment
 .env*
 .env.local

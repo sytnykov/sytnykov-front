@@ -9,7 +9,7 @@ import { ROUTES } from "@/constants/routes";
 import LineIcon, { Rings } from "../homepage/LineIcon";
 import SectionHead from "../homepage/SectionHead";
 import ModalTrigger from "../module/modal/ModalTrigger";
-import GallerySlider from "../shared/gallerySlider/GallerySlider";
+import GallerySlider from "../shared/gallerySlider/GallerySliderLazy";
 import RenderContent from "../shared/renderContent/RenderContent";
 import PublicationTile from "./PublicationTile";
 import { TileData } from "./PublicationsGrid";

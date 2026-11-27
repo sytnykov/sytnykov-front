@@ -1,6 +1,6 @@
 "use client";
 
-import { RefObject } from "react";
+import { RefObject, useEffect } from "react";
 
 import BaseModal from "@/components/shared/modal/BaseModal";
 
@@ -16,6 +16,10 @@ interface IModalWithFormProps {
   priceText?: string;
   course?: string;
   openResponseDialog: (success: boolean) => void;
+  /** when the visitor first saw the button that opens this form */
+  startedAt?: number;
+  /** called once the dialog is in the page and can be opened */
+  onReady?: () => void;
 }
 
 const ModalWithForm = ({
@@ -28,7 +32,13 @@ const ModalWithForm = ({
   course,
   messageFrom,
   openResponseDialog,
+  startedAt,
+  onReady,
 }: IModalWithFormProps) => {
+  useEffect(() => {
+    onReady?.();
+  }, [onReady]);
+
   return (
     <BaseModal dialogRef={dialogRef} onClose={onClose}>
       <div className="mb-8 text-center md:mb-[51px]">
@@ -48,6 +58,7 @@ const ModalWithForm = ({
         course={course}
         messageFrom={messageFrom}
         openResponseDialog={openResponseDialog}
+        startedAt={startedAt}
       />
     </BaseModal>
   );

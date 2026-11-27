@@ -45,6 +45,11 @@ body {
   border-radius: 8px;
 }
 
+/* a stored cookie choice hides the server-rendered banner before first paint */
+html[data-cookie-choice] .cookie-banner {
+  display: none;
+}
+
 /* Fonts: Micra is loaded with next/font/local in the layout */
 
 ::selection {
