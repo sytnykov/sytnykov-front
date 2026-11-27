@@ -28,6 +28,13 @@ export const saveConsent = (analytics: boolean) => {
     ad_user_data: state,
     ad_personalization: state,
   });
+  // After the consent update: lets GTM start consent-gated tags (Clarity)
+  // on this same page view instead of waiting for the next one.
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: "cookie_consent_update",
+    analytics_consent: state,
+  });
   window.dispatchEvent(
     new CustomEvent(CONSENT_CHANGED_EVENT, { detail: consent })
   );
