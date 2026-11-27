@@ -1,150 +1,139 @@
 import { getMessages, getTranslations } from "next-intl/server";
-import Image from "next/image";
 
-import { fadeInAnimation, listVariants } from "@/helpers/animation";
+import { Link } from "@/i18n/navigation";
+import { ROUTES } from "@/constants/routes";
 
-import InfoBox from "../shared/InfoBox";
-import AnimatedList from "../shared/animated/AnimatedList";
-import AnimatedListItem from "../shared/animated/AnimatedListItem";
-import AnimatedWrapper from "../shared/animated/AnimatedWrapper";
+import LineIcon, { Rings } from "./LineIcon";
+import SectionHead, { PillLink } from "./SectionHead";
 
-type ExperienceItem = {
-  title: string;
-  descr: string;
-};
+type ExperienceItem = { title: string; descr: string; result?: string };
+
+const ResultBadge = ({
+  children,
+  dark,
+}: {
+  children: string;
+  dark?: boolean;
+}) => (
+  <span
+    className={
+      dark
+        ? "inline-flex items-center gap-1.5 rounded-full bg-[#2fbf71]/15 px-3 py-1.5 text-[12px] font-semibold text-[#6fe3a3] shadow-[inset_0_0_0_1px_rgba(111,227,163,0.35)]"
+        : "inline-flex items-center gap-1.5 rounded-full bg-[#e5f6ec] px-3 py-1.5 text-[12px] font-semibold text-[#17734a]"
+    }
+  >
+    <LineIcon name="check" className="size-3.5" />
+    {children}
+  </span>
+);
 
 const HomeExperience = async () => {
   const t = await getTranslations("homepage.experience");
-
   const messages = await getMessages();
+  const list = messages.homepage.experience.experienceList as ExperienceItem[];
 
-  const experienceList = messages.homepage.experience
-    .experienceList as ExperienceItem[];
+  // the decree case is the strongest proof — it leads
+  const featuredIdx = Math.max(
+    0,
+    list.findIndex(i => /Указ/i.test(i.title))
+  );
+  const featured = list[featuredIdx];
+  const rest = list.filter((_, i) => i !== featuredIdx);
 
   return (
-    <section className="relative py-[120px]">
-      <AnimatedWrapper
-        animation={fadeInAnimation({ x: 50, scale: 0.8 })}
-        className="absolute right-0 top-0 h-[221px] w-[225px] xl:hidden"
-        aria-hidden="true"
-      >
-        <Image
-          src="/images/homepage/home-experience-decor-1-mob.webp"
-          alt="Декоративне зображення"
-          fill
-          sizes="225px"
-          className="object-cover"
-        />
-      </AnimatedWrapper>
+    <section className="relative isolate overflow-hidden bg-light py-14 md:py-20 xl:py-[100px]">
+      <div
+        aria-hidden
+        className="absolute -bottom-[260px] -left-[240px] -z-10 size-[620px] rounded-full bg-[radial-gradient(closest-side,rgba(81,136,255,0.14),rgba(81,136,255,0))]"
+      />
+      <Rings className="absolute -bottom-[260px] -left-[240px] -z-10 w-[600px] max-md:hidden" />
 
-      <div className="container max-w-[1280px] max-md:max-w-[400px]">
-        <div className="mb-20 xl:flex xl:gap-5">
-          <div className="max-xl:mb-10">
-            <AnimatedWrapper
-              animation={fadeInAnimation({ y: -50 })}
-              className="flex flex-col gap-5 xl:mb-8 xl:flex-col-reverse xl:gap-7"
-            >
-              <h2 className="font-micra text-2xl leading-[1.22] xl:text-[40px]">
-                {t("title")}
-              </h2>
-
-              <p className="font-light leading-[1.22]">{t("descr-1")}</p>
-            </AnimatedWrapper>
-
-            <AnimatedWrapper
-              animation={fadeInAnimation({ x: -50, delay: 0.6 })}
-              className="relative hidden xl:block xl:h-[234px] xl:w-[480px]"
-            >
-              <Image
-                src="/images/homepage/home-experience-small.webp"
-                alt="картинка до публікації"
-                fill
-                sizes="400px"
-                className="rounded-lg object-cover"
-              />
-            </AnimatedWrapper>
-          </div>
-
-          <div className="max-md:-mx-8">
-            <AnimatedWrapper
-              animation={fadeInAnimation({ x: 50, delay: 0.3 })}
-              className="relative mb-16 h-[174px] max-md:mx-auto max-md:w-screen max-md:max-w-[400px] md:h-[328px] xl:mb-6 xl:w-[680px]"
-            >
-              <Image
-                src="/images/homepage/home-experience-large.webp"
-                alt="картинка до публікації"
-                fill
-                sizes="(max-width: 786px) 100vw, 60vw"
-                className="z-[5] rounded-[4px] object-cover"
-              />
-
-              <div
-                className="absolute -bottom-[80px] right-[50%] h-[174px] w-[176px] max-xl:translate-x-1/2 xl:-left-[115px] xl:top-0 xl:h-[266px] xl:w-[264px]"
-                aria-hidden="true"
-              >
-                <Image
-                  src="/images/homepage/home-experience-decor-2-mob.webp"
-                  alt="Декоративне зображення"
-                  fill
-                  sizes="176px"
-                  className="object-contain xl:hidden"
-                />
-                <Image
-                  src="/images/homepage/home-experience-decor-4-desk.webp"
-                  alt="Декоративне зображення"
-                  fill
-                  sizes="264px"
-                  className="hidden object-contain xl:block"
-                />
+      <div className="container max-w-[1280px]">
+        <SectionHead
+          title={t("title")}
+          descr={t("descr")}
+          action={
+            <div className="flex items-center gap-4 max-md:hidden">
+              {/* proof badge fills the header like the school badge in courses */}
+              <div className="flex items-center gap-3 rounded-full bg-white py-2 pl-2 pr-5 shadow-[0_20px_50px_-28px_rgba(9,17,41,0.45),inset_0_0_0_1px_rgba(9,17,41,0.06)]">
+                <span className="relative grid size-[46px] place-items-center rounded-full bg-[linear-gradient(145deg,#13275f,#091129)] text-accent">
+                  <LineIcon name="scales" className="size-[22px]" />
+                  <span className="absolute -right-0.5 -top-0.5 grid size-[18px] place-items-center rounded-full bg-[#2fbf71] text-light ring-2 ring-white">
+                    <LineIcon name="check" className="size-2.5" />
+                  </span>
+                </span>
+                <div>
+                  <p className="text-[15px] font-semibold leading-[1.25] text-dark">
+                    {t("badgeTitle")}
+                  </p>
+                  <p className="mt-0.5 text-[13px] text-dark/60">
+                    {t("badgeText")}
+                  </p>
+                </div>
               </div>
-            </AnimatedWrapper>
+              <Link href={ROUTES.EXPERIENCE}>
+                <PillLink>{t("button")}</PillLink>
+              </Link>
+            </div>
+          }
+        />
 
-            <AnimatedWrapper animation={fadeInAnimation({ y: 50, delay: 0.9 })}>
-              <p className="font-light leading-[1.22] max-md:mx-8">
-                {t("descr-2")}
+        <div className="grid gap-3 md:gap-4 xl:grid-cols-12 xl:gap-5">
+          {/* featured case */}
+          {featured && (
+            <article className="relative isolate flex flex-col justify-between overflow-hidden rounded-[26px] bg-dark p-6 text-light md:p-9 xl:col-span-7 xl:row-span-2">
+              <span
+                aria-hidden
+                className="absolute inset-0 -z-10 bg-[radial-gradient(70%_80%_at_100%_0%,rgba(81,136,255,0.5),rgba(81,136,255,0)_62%)]"
+              />
+              <Rings className="absolute -right-[170px] -top-[170px] -z-10 w-[480px]" />
+              <LineIcon
+                name="scales"
+                className="absolute right-6 top-6 -z-10 size-[150px] text-accent/25 md:right-10 md:top-10 md:size-[190px]"
+              />
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-full bg-white/10 px-3 py-1.5 text-[12px] font-medium shadow-[inset_0_0_0_1px_rgba(255,255,255,0.14)]">
+                  {t("featured")}
+                </span>
+                {featured.result && (
+                  <ResultBadge dark>{featured.result}</ResultBadge>
+                )}
+              </div>
+              <div className="mt-14 md:mt-32">
+                <h3 className="max-w-[520px] text-balance text-[20px] font-semibold leading-[1.2] tracking-[-0.02em] md:text-[26px] xl:text-[30px]">
+                  {featured.title}
+                </h3>
+                <p className="mt-4 max-w-[560px] text-pretty text-[15px] leading-[1.6] text-white/70 md:text-[16px]">
+                  {featured.descr}
+                </p>
+              </div>
+            </article>
+          )}
+
+          {rest.map(({ title, descr, result }) => (
+            <article
+              key={title}
+              className="group relative isolate overflow-hidden rounded-[24px] bg-[linear-gradient(160deg,#ffffff_35%,#e6edff_140%)] p-6 shadow-[inset_0_0_0_1px_rgba(9,17,41,0.07)] transition-[transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-[inset_0_0_0_1px_rgba(81,136,255,0.35),0_24px_50px_-30px_rgba(81,136,255,0.7)] md:p-7 xl:col-span-5"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <span className="grid size-11 shrink-0 place-items-center rounded-[14px] bg-[linear-gradient(145deg,#13275f,#091129)] text-accent">
+                  <LineIcon name="scales" className="size-[22px]" />
+                </span>
+                {result && <ResultBadge>{result}</ResultBadge>}
+              </div>
+              <h3 className="mt-5 text-balance text-[17px] font-semibold leading-[1.3] tracking-[-0.01em] text-dark md:text-[19px]">
+                {title}
+              </h3>
+              <p className="mt-2.5 line-clamp-4 text-pretty text-[14px] leading-[1.6] text-dark/60 md:text-[15px]">
+                {descr}
               </p>
-            </AnimatedWrapper>
-          </div>
+            </article>
+          ))}
         </div>
 
-        <AnimatedList
-          viewport={{ once: true, amount: 0.4 }}
-          animation={listVariants({ staggerChildren: 0.5 })}
-          className="grid gap-4 md:grid-cols-2 xl:md:grid-cols-3 xl:gap-5"
-        >
-          {experienceList.map(({ title, descr }, index) => (
-            <AnimatedListItem key={title}>
-              <InfoBox classname="relative overflow-hidden xl:bg-[linear-gradient(152.98deg,_#FFFFFF_16.89%,_#C0D4FF_274.64%)]">
-                <h3 className="mb-4 font-micra text-[20px] xl:w-[230px] xl:text-[24px]">
-                  {title}
-                </h3>
-                <p className="font-light max-xl:text-[14px]">{descr}</p>
-
-                {index === 1 && (
-                  <div
-                    className="absolute right-0 top-1/2 z-[5] h-[196px] w-[84px] max-xl:-translate-y-1/2 xl:-right-[6px] xl:-top-[10px] xl:h-[202px] xl:w-[99px]"
-                    aria-hidden="true"
-                  >
-                    <Image
-                      src="/images/homepage/home-experience-decor-3-mob.webp"
-                      alt="Декоративне зображення"
-                      fill
-                      sizes="84px"
-                      className="object-contain xl:hidden"
-                    />
-                    <Image
-                      src="/images/homepage/home-experience-decor-5-desk.webp"
-                      alt="Декоративне зображення"
-                      fill
-                      sizes="99px"
-                      className="hidden object-contain xl:block"
-                    />
-                  </div>
-                )}
-              </InfoBox>
-            </AnimatedListItem>
-          ))}
-        </AnimatedList>
+        <Link href={ROUTES.EXPERIENCE} className="mt-8 block md:hidden">
+          <PillLink>{t("button")}</PillLink>
+        </Link>
       </div>
     </section>
   );

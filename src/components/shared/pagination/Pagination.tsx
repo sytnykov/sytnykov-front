@@ -49,7 +49,7 @@ const Pagination = ({
       <IconButtonOrLink
         iconClassName="rotate-180"
         variant={variant}
-        aria-label={t("prev")}
+        ariaLabel={t("prev")}
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
       />
@@ -80,7 +80,7 @@ const Pagination = ({
 
       <IconButtonOrLink
         variant={variant}
-        aria-label={t("next")}
+        ariaLabel={t("next")}
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
       />

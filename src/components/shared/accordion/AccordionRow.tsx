@@ -58,9 +58,9 @@ const AccordionRow = ({ data, isOpen, onClick }: AccordionRowProps) => {
         {descr && descr.length > 0 && (
           <ul className="flex flex-col gap-3 pt-6">
             {descr.map((item, index) => (
-              <p key={index} className="text-[13px] font-light xl:text-[14px]">
+              <li key={index} className="text-[13px] font-light xl:text-[14px]">
                 {item}
-              </p>
+              </li>
             ))}
           </ul>
         )}

@@ -19,6 +19,10 @@ export default {
         dark: "#091129",
         "dark-light": "#3a3a3a",
         accent: "#5188ff",
+        // same blue, deeper: white text on it and small text on white pass WCAG 4.5:1
+        "accent-strong": "#3a6cf0",
+        // for small text on the soft-blue #f3f6fd panels
+        "accent-ink": "#2f5fe0",
       },
       backgroundImage: {
         "btn-primary":
@@ -31,7 +35,7 @@ export default {
       },
       fontFamily: {
         montserrat: ["var(--font-montserrat)", "sans-serif"],
-        micra: ["Micra", "sans-serif"],
+        micra: ["var(--font-micra)", "Micra", "sans-serif"],
       },
       container: {
         center: true,

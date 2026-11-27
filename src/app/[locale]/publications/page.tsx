@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
-import PublicationsContent from "@/components/publicationsPage/PublicationListContent";
-import PublicationsHero from "@/components/publicationsPage/PublicationListHero";
+import HomeBottomCTA from "@/components/homepage/HomeBottomCTA";
+import PublicationsPageView from "@/components/publications/PublicationsPageView";
 import { ROUTES } from "@/constants/routes";
 import { generatePageMetadata } from "@/utils/generatePageMetaData";
 import { Locale } from "@/types/locale";
@@ -29,8 +29,8 @@ const PublicationsPage = async ({
 
   return (
     <>
-      <PublicationsHero />
-      <PublicationsContent lang={locale} />
+      <PublicationsPageView lang={locale} />
+      <HomeBottomCTA />
     </>
   );
 };

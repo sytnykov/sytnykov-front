@@ -13,24 +13,32 @@ interface ICourseContentProps {
 
 const CourseContent = ({ course, lang }: ICourseContentProps) => {
   const { firstBlock, secondBlock } = course;
+  // Courses built in the constructor may have no old-format content at all.
+  const firstContent = firstBlock?.content?.[lang] ?? firstBlock?.content?.uk;
+  const hasSecond = !!secondBlock?.accordion?.length;
+  if (!firstContent?.length && !hasSecond) return null;
 
   return (
     <section className="py-[120px]">
       <div className="container max-w-[1280px]">
-        <AnimatedWrapper animation={fadeInAnimation({ y: -50 })}>
-          <h2 className="mb-10 font-micra text-[22px] uppercase xl:text-[40px] xl:leading-[1.4]">
-            {firstBlock.title[lang]}
-          </h2>
-        </AnimatedWrapper>
+        {firstBlock?.title?.[lang] && (
+          <AnimatedWrapper animation={fadeInAnimation({ y: -50 })}>
+            <h2 className="mb-10 font-micra text-[22px] uppercase xl:text-[40px] xl:leading-[1.4]">
+              {firstBlock.title[lang]}
+            </h2>
+          </AnimatedWrapper>
+        )}
 
-        <AnimatedWrapper
-          animation={fadeInAnimation({ y: -50, delay: 0.3 })}
-          className="flex flex-col gap-6"
-        >
-          <RenderContent content={firstBlock.content[lang]} />
-        </AnimatedWrapper>
+        {!!firstContent?.length && (
+          <AnimatedWrapper
+            animation={fadeInAnimation({ y: -50, delay: 0.3 })}
+            className="flex flex-col gap-6"
+          >
+            <RenderContent content={firstContent} />
+          </AnimatedWrapper>
+        )}
 
-        {secondBlock && (
+        {hasSecond && secondBlock?.title?.[lang] && (
           <AnimatedWrapper animation={fadeInAnimation({ x: 50, delay: 0.5 })}>
             <h2 className="mb-[52px] mt-[120px] font-micra text-[22px] uppercase xl:mb-[40px] xl:text-[40px] xl:leading-[1.4]">
               {secondBlock.title[lang]}
@@ -38,7 +46,7 @@ const CourseContent = ({ course, lang }: ICourseContentProps) => {
           </AnimatedWrapper>
         )}
 
-        {secondBlock && (
+        {hasSecond && (
           <Accordion
             data={secondBlock.accordion}
             lang={lang}

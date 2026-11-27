@@ -1,13 +1,13 @@
 import { Metadata } from "next";
 
 import HomeAdvantages from "@/components/homepage/HomeAdvantages";
+import HomeAudience from "@/components/homepage/HomeAudience";
 import HomeBottomCTA from "@/components/homepage/HomeBottomCTA";
+import HomeConsultation from "@/components/homepage/HomeConsultation";
 import HomeCourses from "@/components/homepage/HomeCourses";
 import HomeExperience from "@/components/homepage/HomeExperience";
 import HomeHero from "@/components/homepage/HomeHero";
-import HomeKnowledge from "@/components/homepage/HomeKnowledge";
 import HomePublications from "@/components/homepage/HomePublications";
-import HomeTopCTA from "@/components/homepage/HomeTopCTA";
 import { ROUTES } from "@/constants/routes";
 import { generatePageMetadata } from "@/utils/generatePageMetaData";
 import { Locale } from "@/types/locale";
@@ -37,11 +37,11 @@ export default async function Home({
     <>
       <HomeHero />
       <HomeCourses lang={locale} />
+      <HomeAudience />
       <HomeAdvantages />
-      <HomeTopCTA />
-      <HomePublications lang={locale} />
-      <HomeKnowledge />
       <HomeExperience />
+      <HomeConsultation />
+      <HomePublications lang={locale} />
       <HomeBottomCTA />
     </>
   );

@@ -4,6 +4,7 @@ import {
   LinkedInIcon,
   TelegramIcon,
   TikTokIcon,
+  YouTubeIcon,
 } from "@/components/shared/icons";
 
 export const siteConfig = {
@@ -27,9 +28,14 @@ export const siteConfig = {
       label: "Telegram",
     },
     {
-      href: "#",
+      href: "https://www.linkedin.com/in/alexsytnykov",
       icon: <LinkedInIcon />,
       label: "LinkedIn",
+    },
+    {
+      href: "https://www.youtube.com/channel/UCILC5_pu-ARKQLZA5VJ4YQg",
+      icon: <YouTubeIcon />,
+      label: "YouTube",
     },
     {
       href: "#",

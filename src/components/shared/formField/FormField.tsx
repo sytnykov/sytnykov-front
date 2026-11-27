@@ -5,7 +5,7 @@ import { cn } from "@/utils/cn";
 interface FormFieldProps {
   name: string;
   type?: "text" | "tel" | "email" | "password";
-  variant?: "basic" | "gradient";
+  variant?: "basic" | "gradient" | "soft";
   placeholder: string;
   required?: boolean;
   wrapperClassName?: string;
@@ -35,6 +35,7 @@ const FormField = ({
     variant === "basic" && (fieldError ? "border-red-500" : "border-dark"),
     variant === "gradient" &&
       "rounded-md p-[1px] before:absolute before:inset-0 before:z-[-1] before:rounded-md before:bg-gradient-to-br",
+    variant === "soft" && "rounded-[16px]",
     variant === "gradient" &&
       (fieldError
         ? "before:from-red-500 before:to-red-500"
@@ -46,6 +47,11 @@ const FormField = ({
     "w-full  focus:outline-none",
     variant === "basic" && "rounded-full px-6 py-[13px]",
     variant === "gradient" && "rounded-md px-[20px] py-[13px]",
+    variant === "soft" &&
+      cn(
+        "h-[54px] rounded-[16px] border bg-[#f3f6fd] px-5 text-[15px] text-dark placeholder:text-dark/60 transition-colors duration-300 focus:border-accent-strong focus:bg-white",
+        fieldError ? "border-red-500" : "border-transparent"
+      ),
     inputClassName
   );
 

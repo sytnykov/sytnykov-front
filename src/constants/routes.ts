@@ -7,6 +7,5 @@ export const ROUTES = {
   CONTACTS: "/contacts",
   EDUCATION: "/education",
   ANNOUNCEMENTS: "/announcements",
-  PRIVACY: "/privacy",
-  TERMS: "/terms",
+  PRIVACY: "/legal/privacy-policy",
 };

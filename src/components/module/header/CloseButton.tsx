@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 
 import IconButton from "@/components/shared/button/IconButton";
@@ -7,17 +8,20 @@ interface ICloseButtonProps {
 }
 
 const CloseButton = ({ onClick }: ICloseButtonProps) => {
+  const t = useTranslations("header.nav");
+
   return (
     <IconButton
       handleClick={onClick}
-      className="absolute right-4 top-5 z-[60] size-6 xl:right-6 xl:top-6 xl:size-10"
+      ariaLabel={t("closeMenu")}
+      className="relative grid size-11 place-items-center rounded-full bg-white/[0.06]"
     >
       <Image
         src="/images/icons/cross.svg"
-        alt="burger menu icon"
+        alt=""
         width={24}
         height={24}
-        className="h-full w-full"
+        className="size-5"
       />
     </IconButton>
   );

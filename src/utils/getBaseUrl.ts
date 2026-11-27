@@ -1,9 +1,9 @@
-import { headers } from "next/headers";
+/**
+ * Canonical origin of the site. One fixed domain (no www) so that
+ * www/non-www copies never compete in search.
+ */
+export const SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL || "https://sitnikov.com.ua"
+).replace(/\/$/, "");
 
-export const getBaseUrl = async () => {
-  const host = (await headers()).get("host");
-  const protocol = host?.includes("localhost") ? "http" : "https";
-  const baseUrl = `${protocol}://${host}`;
-
-  return baseUrl;
-};
+export const getBaseUrl = async () => SITE_URL;
