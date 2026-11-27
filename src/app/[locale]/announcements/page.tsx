@@ -1,10 +1,12 @@
 import { Metadata } from "next";
 
-import AnnouncementsContent from "@/components/announcementsPage/AnnouncementsContent";
-import AnnouncementsHero from "@/components/announcementsPage/AnnouncementsHero";
+import AnnouncementsView from "@/components/announcementsPage/AnnouncementsView";
+import HomeBottomCTA from "@/components/homepage/HomeBottomCTA";
 import { ROUTES } from "@/constants/routes";
 import { generatePageMetadata } from "@/utils/generatePageMetaData";
 import { Locale } from "@/types/locale";
+
+export const revalidate = 86400;
 
 export async function generateMetadata({
   params,
@@ -29,8 +31,8 @@ const AnnouncementsPage = async ({
 
   return (
     <>
-      <AnnouncementsHero />
-      <AnnouncementsContent lang={locale} />
+      <AnnouncementsView lang={locale} />
+      <HomeBottomCTA />
     </>
   );
 };

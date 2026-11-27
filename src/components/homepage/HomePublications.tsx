@@ -1,60 +1,86 @@
 import { getTranslations } from "next-intl/server";
-import Image from "next/image";
 
+import { Link } from "@/i18n/navigation";
 import { getPaginatedPublications } from "@/lib/sanity/queries/queries";
 import { HOME_PUBLICATIONS_PER_PAGE } from "@/constants/pagination";
 import { ROUTES } from "@/constants/routes";
+import { mapItemToCardProps } from "@/utils/mapItemToCardProps";
 import { Locale } from "@/types/locale";
-import { fadeInAnimation } from "@/helpers/animation";
 
-import AnimatedWrapper from "../shared/animated/AnimatedWrapper";
-import ButtonOrLink from "../shared/button/ButtonOrLink ";
-import PublicationList from "../shared/publicationList/PublicationList";
+import PublicationTile from "../publications/PublicationTile";
+import SectionHead, { PillLink } from "./SectionHead";
 
 const HomePublications = async ({ lang }: { lang: Locale }) => {
   const t = await getTranslations("homepage.publications");
 
-  const publicationList = await getPaginatedPublications(
-    HOME_PUBLICATIONS_PER_PAGE
-  );
+  let items: Awaited<ReturnType<typeof getPaginatedPublications>> = [];
+  try {
+    items = await getPaginatedPublications(HOME_PUBLICATIONS_PER_PAGE);
+  } catch {
+    items = [];
+  }
+  if (items.length === 0) return null;
 
   return (
-    <section className="relative py-[120px] xl:pb-[158px] xl:pt-[200px]">
-      <div className="container max-w-[1280px]">
-        <div className="mx-auto mb-[52px] flex flex-col max-xl:max-w-[374px] xl:flex-row-reverse xl:items-center xl:justify-between">
-          <AnimatedWrapper animation={fadeInAnimation({ x: 50 })}>
-            <h2 className="font-micra text-[24px] max-xl:mb-[20px] xl:max-w-[500px] xl:text-right xl:text-[48px]">
-              {t("title")}
-            </h2>
-          </AnimatedWrapper>
-
-          <AnimatedWrapper
-            animation={fadeInAnimation({ x: -50 })}
-            className="xl:max-w-[380px]"
-          >
-            <p className="mb-8 font-light">{t("descr")}</p>
-            <ButtonOrLink href={ROUTES.PUBLICATIONS} variant="light">
-              {t("button")}
-            </ButtonOrLink>
-          </AnimatedWrapper>
-        </div>
-
-        <PublicationList data={publicationList} lang={lang} />
-      </div>
-
-      <AnimatedWrapper
-        animation={fadeInAnimation({ scale: 0.8, delay: 0.4 })}
-        className="absolute left-0 top-0 -z-[5] h-[218px] w-[232px] xl:hidden"
+    <section className="relative isolate overflow-hidden bg-[#f3f6fd] pb-10 pt-14 md:pb-12 md:pt-20 xl:pb-14 xl:pt-[100px]">
+      <div
+        aria-hidden
+        className="absolute -right-[220px] -top-[240px] -z-10 size-[620px] rounded-full bg-[radial-gradient(closest-side,rgba(81,136,255,0.14),rgba(81,136,255,0))]"
+      />
+      <svg
+        aria-hidden
+        viewBox="0 0 600 600"
+        className="absolute -right-[220px] -top-[240px] -z-10 w-[600px] max-md:hidden"
       >
-        <Image
-          src="/images/homepage/home-publications-decor-mob.webp"
-          alt="Декоративне зображення"
-          fill
-          sizes="232px"
-          className="object-contain"
+        {[290, 230, 170, 110].map((r, i) => (
+          <circle
+            key={r}
+            cx="300"
+            cy="300"
+            r={r}
+            fill="none"
+            stroke="#5188ff"
+            strokeOpacity={0.1 + i * 0.04}
+            strokeDasharray={i === 0 ? "2 7" : undefined}
+          />
+        ))}
+      </svg>
+
+      <div className="container max-w-[1280px]">
+        <SectionHead
+          title={t("title")}
+          descr={t("descr")}
+          action={
+            <Link href={ROUTES.PUBLICATIONS} className="max-md:hidden">
+              <PillLink>{t("button")}</PillLink>
+            </Link>
+          }
         />
-      </AnimatedWrapper>
-      <div className="absolute -left-[254px] top-[31px] -z-[1] h-[233px] w-[1146px] rotate-[11.31deg] rounded-full bg-[#ffffff] blur-[223px] xl:-left-[45%] xl:hidden" />
+
+        <ul className="grid gap-3 md:grid-cols-2 md:gap-5 xl:grid-cols-3">
+          {items.map(item => {
+            const { title, description, info, href } = mapItemToCardProps(
+              item,
+              lang
+            );
+            return (
+              <li key={title}>
+                <PublicationTile
+                  href={href ?? `/${lang}${ROUTES.PUBLICATIONS}`}
+                  title={title}
+                  description={description}
+                  info={info}
+                  label={t("label")}
+                />
+              </li>
+            );
+          })}
+        </ul>
+
+        <Link href={ROUTES.PUBLICATIONS} className="mt-8 block md:hidden">
+          <PillLink>{t("button")}</PillLink>
+        </Link>
+      </div>
     </section>
   );
 };

@@ -42,7 +42,11 @@ const RenderContent = ({ content }: Props) => {
                 href={linkDef.href}
                 className={`${fontWeight} text-blue-500 underline`}
                 target="_blank"
-                rel="noopener noreferrer"
+                rel={
+                  /^https?:\/\/(www\.)?sitnikov\.com\.ua/i.test(linkDef.href)
+                    ? "noopener noreferrer"
+                    : "nofollow noopener noreferrer"
+                }
               >
                 {textNode}
               </Link>

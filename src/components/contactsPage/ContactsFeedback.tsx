@@ -5,7 +5,7 @@ import { fadeInAnimation } from "@/helpers/animation";
 import AnimatedWrapper from "../shared/animated/AnimatedWrapper";
 import ContactFeedbackForm from "./ContactFeedbackForm";
 
-type FieldKey = "name" | "tel" | "mes";
+type FieldKey = "name" | "tel" | "email" | "mes";
 
 export type FormPlaceholderMap = Record<FieldKey, string>;
 

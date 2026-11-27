@@ -44,8 +44,15 @@ interface IModalTriggerProps {
   variant: Variant;
   buttonClassName?: string;
   messageFrom: string;
-  buttonVariant?: "dark" | "light" | "transparent" | "light-gradient";
+  buttonVariant?:
+    | "dark"
+    | "light"
+    | "transparent"
+    | "light-gradient"
+    | "accent";
   course?: string;
+  /** custom button text instead of the variant default */
+  label?: string;
 }
 
 const ModalTrigger = ({
@@ -54,6 +61,7 @@ const ModalTrigger = ({
   buttonClassName,
   course,
   messageFrom,
+  label,
 }: IModalTriggerProps) => {
   const [isError, setIsError] = useState(false);
 
@@ -91,7 +99,7 @@ const ModalTrigger = ({
         variant={buttonVariant}
         className={buttonClassName}
       >
-        {t(config.buttonText)}
+        {label || t(config.buttonText)}
       </ButtonOrLink>
 
       <ModalWithForm

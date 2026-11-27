@@ -1,5 +1,7 @@
 import { Metadata } from "next";
+import { notFound } from "next/navigation";
 
+import FinalCta from "@/components/coursePage/builder/FinalCta";
 import EducationContent from "@/components/educationPage/EducationContent";
 import EducationHero from "@/components/educationPage/EducationHero";
 import {
@@ -13,14 +15,14 @@ import { Locale } from "@/types/locale";
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ locale: Locale }>;
+  params: Promise<{ locale: Locale; category: string }>;
 }): Promise<Metadata> {
-  const { locale } = await params;
+  const { locale, category } = await params;
 
   return generatePageMetadata({
     locale,
     namespace: "educationPage",
-    path: ROUTES.EDUCATION,
+    path: `${ROUTES.EDUCATION}/${category}`,
   });
 }
 
@@ -32,6 +34,7 @@ const EducationCategoryPage = async ({
   const { locale, category } = await params;
 
   const courseCategories = await getCourseCategories();
+  if (!courseCategories.some(c => c.slug === category)) notFound();
   const allCourses = await getCoursesByCategory(category);
 
   return (
@@ -42,6 +45,7 @@ const EducationCategoryPage = async ({
         allCourses={allCourses}
         lang={locale}
       />
+      <FinalCta course={locale === "ru" ? "Подбор курса" : "Підбір курсу"} />
     </>
   );
 };

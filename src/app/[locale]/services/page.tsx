@@ -1,10 +1,11 @@
 import { Metadata } from "next";
 import { Locale } from "next-intl";
 
-import ServicesAnalytics from "@/components/servicespage/ServicesAnalytics";
-import ServicesConsulting from "@/components/servicespage/ServicesConsulting";
+import HomeBottomCTA from "@/components/homepage/HomeBottomCTA";
+import ServicesDirection from "@/components/servicespage/ServicesDirection";
+import ServicesFaq from "@/components/servicespage/ServicesFaq";
 import ServicesHero from "@/components/servicespage/ServicesHero";
-import ServicesPractice from "@/components/servicespage/ServicesPractice";
+import ServicesProcess from "@/components/servicespage/ServicesProcess";
 import { ROUTES } from "@/constants/routes";
 import { generatePageMetadata } from "@/utils/generatePageMetaData";
 
@@ -26,9 +27,12 @@ const ServicesPage = () => {
   return (
     <>
       <ServicesHero />
-      <ServicesPractice />
-      <ServicesAnalytics />
-      <ServicesConsulting />
+      <ServicesDirection index={0} />
+      <ServicesDirection index={1} />
+      <ServicesDirection index={2} />
+      <ServicesProcess />
+      <ServicesFaq />
+      <HomeBottomCTA />
     </>
   );
 };

@@ -1,7 +1,9 @@
 import { Metadata } from "next";
 
+import FinalCta from "@/components/coursePage/builder/FinalCta";
 import EducationContent from "@/components/educationPage/EducationContent";
 import EducationHero from "@/components/educationPage/EducationHero";
+import ProgramScheme from "@/components/educationPage/ProgramScheme";
 import {
   getAllCourses,
   getCourseCategories,
@@ -37,11 +39,13 @@ const EducationPage = async ({
   return (
     <>
       <EducationHero />
+      <ProgramScheme locale={locale} />
       <EducationContent
         courseCategories={courseCategories}
         allCourses={allCourses}
         lang={locale}
       />
+      <FinalCta course={locale === "ru" ? "Подбор курса" : "Підбір курсу"} />
     </>
   );
 };

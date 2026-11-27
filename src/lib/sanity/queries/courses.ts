@@ -165,3 +165,49 @@ export const getCourseCategories = async (): Promise<CourseCategoryItem[]> => {
       title
       }`);
 };
+
+/** Constructor data of one course (sections + flow) and the shared trainer profile. */
+export const getCoursePage = async (slug: string) => {
+  return await client.fetch<{
+    course: {
+      flowStart?: string;
+      priceValidUntil?: string;
+      sections?: import("../types/courseBlocks").CourseBlock[];
+    } | null;
+    trainer: import("../types/courseBlocks").Trainer | null;
+  }>(
+    `{
+      "course": *[_type == "course" && slug.current == $slug][0]{
+        flowStart,
+        priceValidUntil,
+        "sections": sections[]{
+          ...,
+          "image": image{ "url": asset->url },
+          "images": images[]{ "url": asset->url },
+          "reviews": reviews[]{ ..., "photo": photo{ "url": asset->url } }
+        }
+      },
+      "trainer": *[_type == "trainer"][0]{
+        ...,
+        "photo": photo{ "url": asset->url },
+        "logos": logos[]{ "url": asset->url }
+      }
+    }`,
+    { slug }
+  );
+};
+
+/** What the thank-you page needs to know about a paid course. */
+export const getCourseThanks = async (slug: string) =>
+  client.fetch<{
+    title?: { uk?: string; ru?: string };
+    slug?: string;
+    category?: string;
+    telegramGroupUrl?: string;
+    flowStart?: string;
+  } | null>(
+    `*[_type == "course" && slug.current == $slug][0]{
+      title, "slug": slug.current, "category": courseType->slug.current, telegramGroupUrl, flowStart
+    }`,
+    { slug }
+  );

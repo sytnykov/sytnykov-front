@@ -22,24 +22,32 @@ export async function generatePageMetadata({
   const t = await getTranslations();
 
   const companyName = t("header.companyName");
-  const title = t(namespace + ".hero.title");
-  const description = t(namespace + ".hero.descr");
+  const metaTitleKey = namespace + ".hero.metaTitle";
+  const metaDescrKey = namespace + ".hero.metaDescr";
+  const hasMetaTitle = t.has(metaTitleKey);
+  const title = hasMetaTitle ? t(metaTitleKey) : t(namespace + ".hero.title");
+  const description = t.has(metaDescrKey)
+    ? t(metaDescrKey)
+    : t(namespace + ".hero.descr");
   const siteName = t("seo.siteName");
 
   const baseUrl = await getBaseUrl();
 
   const { defaultLocale, locales } = routing;
 
-  const localizedPath = `/${locale}${path}`;
+  const localizedPath = `/${locale}${path === "/" ? "" : path}`;
+  // every locale lives under its prefix (/uk, /ru); x-default → default locale
+  const cleanPath = path === "/" ? "" : path;
   const alternates: Record<string, string> = {};
   locales.forEach(loc => {
-    alternates[loc] = loc === defaultLocale ? path : `/${loc}${path}`;
+    alternates[loc] = `${baseUrl}/${loc}${cleanPath}`;
   });
+  alternates["x-default"] = `${baseUrl}/${defaultLocale}${cleanPath}`;
 
   const defaultOgImage = `${baseUrl}/images/seo-default.webp`;
 
   const metadata: Metadata = {
-    title: `${companyName} | ${title}`,
+    title: hasMetaTitle ? title : `${companyName} | ${title}`,
     description: description,
     metadataBase: new URL(baseUrl),
     openGraph: {

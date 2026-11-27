@@ -1,55 +1,59 @@
 import Image from "next/image";
 
+import { Link } from "@/i18n/navigation";
 import { CourseItem } from "@/lib/sanity/types/courseTypes";
 import { ROUTES } from "@/constants/routes";
+import { courseImage, normalizeTitle } from "@/utils/courseImage";
 import { Locale } from "@/types/locale";
 
-import InfoBox from "../shared/InfoBox";
-import ButtonOrLink from "../shared/button/ButtonOrLink ";
+import { PillLink } from "../homepage/SectionHead";
 
-interface IEducationCardProps {
+/** Course card: themed photo, type chip, title, short promise, one action. */
+const EducationCard = ({
+  course,
+  lang,
+  moreLabel,
+}: {
   course: CourseItem;
   lang: Locale;
-}
-
-const EducationCard = ({ course, lang }: IEducationCardProps) => {
+  moreLabel: string;
+}) => {
   const { courseType, description, title, slug, previewImage } = course;
-
-  const defaultCardImage =
-    "/images/publications/publication-card-default-image.webp";
+  const name = normalizeTitle(title[lang] || title.uk);
 
   return (
-    <article className="h-full">
-      <InfoBox variant="withImage" classname="relative h-full flex flex-col">
-        <div className="relative -mx-6 -mt-6 h-[165px] shrink-0">
-          <Image
-            src={previewImage?.url || defaultCardImage}
-            alt="картинка до публікації"
-            fill
-            sizes="400px"
-            className="rounded-lg object-cover"
-          />
+    <Link
+      href={`${ROUTES.EDUCATION}/${courseType.slug}/${slug}`}
+      className="group flex h-full flex-col overflow-hidden rounded-[26px] bg-light shadow-[0_1px_2px_rgba(9,17,41,0.05)] outline-none ring-accent ring-offset-2 transition-[transform,box-shadow] duration-500 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgba(9,17,41,0.45)] focus-visible:ring-2"
+    >
+      <div className="relative h-[200px] shrink-0 overflow-hidden md:h-[220px]">
+        <Image
+          src={courseImage(title.uk ?? "", previewImage?.url)}
+          alt={name}
+          fill
+          sizes="(min-width: 1280px) 400px, (min-width: 768px) 50vw, 92vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+        />
+        <span
+          aria-hidden
+          className="absolute inset-0 bg-[linear-gradient(0deg,rgba(9,17,41,0.55),rgba(9,17,41,0)_55%)]"
+        />
+        <span className="absolute left-4 top-4 rounded-full bg-dark/70 px-3 py-1.5 text-[12px] font-medium text-light shadow-[inset_0_0_0_1px_rgba(255,255,255,0.18)] backdrop-blur-md">
+          {courseType.title?.[lang] || courseType.title?.uk}
+        </span>
+      </div>
+      <div className="flex flex-1 flex-col p-5 md:p-6">
+        <h3 className="text-balance text-[18px] font-semibold leading-[1.3] text-dark md:text-[19px]">
+          {name}
+        </h3>
+        <p className="mt-2.5 line-clamp-3 text-pretty text-[14px] leading-[1.55] text-dark/60 md:text-[15px]">
+          {description?.[lang] || description?.uk}
+        </p>
+        <div className="mt-auto pt-6">
+          <PillLink>{moreLabel}</PillLink>
         </div>
-
-        <div className="flex flex-col justify-between gap-4 pt-[30px] xl:gap-6">
-          <h3 className="line-clamp-4 font-micra uppercase tracking-normal xl:text-[20px]">
-            {title[lang]}
-          </h3>
-
-          <p className="mt-auto line-clamp-4 gap-[18px] tracking-normal">
-            {description[lang]}
-          </p>
-        </div>
-
-        <ButtonOrLink
-          variant="dark"
-          className="relative z-[1] mt-auto"
-          href={`/${lang}${ROUTES.EDUCATION}/${courseType.slug}/${slug}`}
-        >
-          Переглянути курс
-        </ButtonOrLink>
-      </InfoBox>
-    </article>
+      </div>
+    </Link>
   );
 };
 

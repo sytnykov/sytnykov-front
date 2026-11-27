@@ -1,7 +1,15 @@
+import { getLeadContext } from "@/lib/analytics/attribution";
+
 export interface TelegramFormData {
   name: string;
   phone: string;
+  email?: string;
   message?: string;
+  course?: string;
+  messageFrom?: string;
+  company?: string;
+  /** ms since the form was opened — used for the anti-spam time check */
+  elapsed?: number;
 }
 
 const sendTelegramMessage = async (
@@ -11,7 +19,12 @@ const sendTelegramMessage = async (
     const response = await fetch("/api/telegram", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        ...data,
+        page: typeof window !== "undefined" ? window.location.pathname : "",
+        // where the visitor came from and what they looked at (see attribution.ts)
+        lead: getLeadContext(),
+      }),
     });
 
     return response.ok;

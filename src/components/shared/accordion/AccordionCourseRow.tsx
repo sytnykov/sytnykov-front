@@ -27,6 +27,7 @@ const AccordionCourseRow = ({
   const [height, setHeight] = useState("0px");
 
   const { title, tags, videoUrl } = data;
+  const isButton = tags || videoUrl || undefined;
 
   useEffect(() => {
     if (contentRef.current) {
@@ -36,16 +37,18 @@ const AccordionCourseRow = ({
 
   return (
     <AnimatedListItem>
-      <div className="relative rounded-md p-5 text-light before:absolute before:inset-0 before:z-[-1] before:rounded-md before:bg-[linear-gradient(90deg,_#304F94_0%,_#6582C2_100%)] before:p-[1px] before:content-[''] after:absolute after:inset-[1px] after:z-[-1] after:rounded-md after:bg-[linear-gradient(94.05deg,_#091129_-15.57%,_#001C58_140.61%)] after:content-[''] xl:p-6">
+      <div className="relative flex min-h-[88px] flex-col items-center justify-center rounded-md p-5 text-light before:absolute before:inset-0 before:z-[-1] before:rounded-md before:bg-[linear-gradient(90deg,_#304F94_0%,_#6582C2_100%)] before:p-[1px] before:content-[''] after:absolute after:inset-[1px] after:z-[-1] after:rounded-md after:bg-[linear-gradient(94.05deg,_#091129_-15.57%,_#001C58_140.61%)] after:content-[''] xl:min-h-[118px] xl:p-6">
         <button
           type="button"
           onClick={onClick}
-          disabled={!tags}
-          className={`flex w-full items-center justify-between gap-6 text-left text-[14px] font-medium transition-transform xl:text-[20px]`}
+          className={cn(
+            "flex w-full items-center justify-between gap-6 text-left text-[14px] font-medium transition-transform xl:text-[20px]",
+            isButton ? "cursor-pointer" : "cursor-default"
+          )}
         >
           {title[lang]}
 
-          {tags ? (
+          {isButton && (
             <div
               className={cn(
                 "flex size-12 shrink-0 items-center justify-center rounded-lg bg-light text-dark xl:size-[70px]"
@@ -58,7 +61,7 @@ const AccordionCourseRow = ({
                 )}
               />
             </div>
-          ) : null}
+          )}
         </button>
 
         <div

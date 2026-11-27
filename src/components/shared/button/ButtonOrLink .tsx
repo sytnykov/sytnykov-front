@@ -9,7 +9,7 @@ interface ButtonOrLinkProps {
   onClick?: () => void;
   className?: string;
   type?: "button" | "submit";
-  variant?: "dark" | "light" | "transparent" | "light-gradient";
+  variant?: "dark" | "light" | "transparent" | "light-gradient" | "accent";
   disabled?: boolean;
   isLoading?: boolean;
   ariaLabel?: string;
@@ -34,6 +34,8 @@ const ButtonOrLink = ({
       "text-white before:absolute before:inset-0 before:rounded-full before:z-[-1] before:p-[1px] before:bg-[linear-gradient(90deg,_#304F94_0%,_#6582C2_100%)] before:content-[''] after:absolute after:inset-[1px] after:rounded-full after:z-[-1] after:bg-[linear-gradient(94.05deg,_#091129_-15.57%,_#001C58_140.61%)] after:content-['']",
     variant === "light" &&
       "text-dark after:bg-light before:absolute before:inset-0 before:rounded-full before:z-[-1] before:p-[1px] before:bg-[linear-gradient(90deg,_#304F94_0%,_#6582C2_100%)] before:content-[''] after:absolute after:inset-[1px] after:z-[-1] after:rounded-full after:content-['']",
+    variant === "accent" &&
+      "bg-accent-strong text-white shadow-[0_12px_32px_-12px_rgba(81,136,255,0.8)] hover:bg-[#2f5fe0] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white",
     variant === "transparent" &&
       "border-1 border-light text-light border border-solid bg-transparent",
     variant === "light-gradient" &&
@@ -47,6 +49,7 @@ const ButtonOrLink = ({
     variant === "dark" && "via-blue/30 from-white/20 to-white/20",
     variant === "light" &&
       "via-blue/50 from-blue-700/20 via-[#11285280] to-blue-700/20",
+    variant === "accent" && "from-white/0 via-white/30 to-white/0",
     variant === "transparent" &&
       "via-blue/50 from-blue-700/20 via-[#11285280] to-blue-700/20",
     variant === "light-gradient" &&

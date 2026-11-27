@@ -1,9 +1,7 @@
 import { Metadata } from "next";
 import { Locale } from "next-intl";
 
-import Contacts from "@/components/contactsPage/Contacts";
-import ContactsFeedback from "@/components/contactsPage/ContactsFeedback";
-import ContactsHero from "@/components/contactsPage/ContactsHero";
+import ContactsView from "@/components/contactsPage/ContactsView";
 import { ROUTES } from "@/constants/routes";
 import { generatePageMetadata } from "@/utils/generatePageMetaData";
 
@@ -24,9 +22,7 @@ export async function generateMetadata({
 const ContactsPage = () => {
   return (
     <>
-      <ContactsHero />
-      <Contacts />
-      <ContactsFeedback />
+      <ContactsView />
     </>
   );
 };

@@ -1,10 +1,11 @@
 import { Metadata } from "next";
 import { Locale } from "next-intl";
 
-import ExperienceCareerPath from "@/components/experiencepage/ExperienceCareerPath";
-import ExperienceExpertise from "@/components/experiencepage/ExperienceExpertise";
-import ExperienceHero from "@/components/experiencepage/ExperienceHero";
-import ExperienceProud from "@/components/experiencepage/ExperienceProud";
+import AboutCases from "@/components/experiencepage/AboutCases";
+import AboutExpertise from "@/components/experiencepage/AboutExpertise";
+import AboutHero from "@/components/experiencepage/AboutHero";
+import AboutPath from "@/components/experiencepage/AboutPath";
+import HomeBottomCTA from "@/components/homepage/HomeBottomCTA";
 import { ROUTES } from "@/constants/routes";
 import { generatePageMetadata } from "@/utils/generatePageMetaData";
 
@@ -25,10 +26,11 @@ export async function generateMetadata({
 const ExperiencePage = () => {
   return (
     <>
-      <ExperienceHero />
-      <ExperienceCareerPath />
-      <ExperienceExpertise />
-      <ExperienceProud />
+      <AboutHero />
+      <AboutPath />
+      <AboutExpertise />
+      <AboutCases />
+      <HomeBottomCTA />
     </>
   );
 };

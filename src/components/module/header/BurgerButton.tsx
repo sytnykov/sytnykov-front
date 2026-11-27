@@ -4,17 +4,23 @@ import IconButton from "@/components/shared/button/IconButton";
 
 interface IBurgerButtonProps {
   openMenu: () => void;
+  ariaLabel?: string;
 }
 
-const BurgerButton = ({ openMenu }: IBurgerButtonProps) => {
+const BurgerButton = ({ openMenu, ariaLabel }: IBurgerButtonProps) => {
   return (
-    <IconButton handleClick={openMenu} className="size-10 shrink-0">
+    <IconButton
+      handleClick={openMenu}
+      ariaLabel={ariaLabel}
+      className="relative size-11 shrink-0"
+    >
       <Image
         src="/images/icons/menu.svg"
-        alt="burger menu icon"
+        alt=""
         width={40}
         height={40}
         className="h-full w-full"
+        priority
       />
     </IconButton>
   );

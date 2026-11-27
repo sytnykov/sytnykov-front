@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { BeatLoader } from "react-spinners";
 import { useTranslations } from "next-intl";
@@ -10,10 +10,15 @@ import useModalFormSchema, {
 } from "@/schemas/useModalFormSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { getSessionTouch } from "@/lib/analytics/attribution";
+import { track } from "@/lib/analytics/track";
+import { leadEventParams } from "@/lib/leads/context";
 import sendTelegramMessage from "@/lib/telegram/sendTelegramMessage";
 
 import ButtonOrLink from "../../shared/button/ButtonOrLink ";
+import FormConsent from "../../shared/formField/FormConsent";
 import FormField from "../../shared/formField/FormField";
+import FormHoneypot from "../../shared/formField/FormHoneypot";
 
 interface IModalFormProps {
   buttonText: string;
@@ -33,6 +38,7 @@ const ModalForm = ({
   openResponseDialog,
 }: IModalFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const openedAt = useRef(Date.now());
 
   const t = useTranslations("form");
 
@@ -45,9 +51,22 @@ const ModalForm = ({
 
   const onSubmit = async (data: ModalFormSchema) => {
     setIsLoading(true);
-    const fullData = { messageFrom, ...data, course: course };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { consent, ...fields } = data;
+    const success = await sendTelegramMessage({
+      messageFrom,
+      ...fields,
+      course,
+      elapsed: Date.now() - openedAt.current,
+    });
 
-    const success = await sendTelegramMessage(fullData);
+    if (success) {
+      track("generate_lead", {
+        form_type: messageFrom,
+        course: course || "",
+        ...leadEventParams(getSessionTouch()),
+      });
+    }
 
     setIsLoading(false);
 
@@ -64,11 +83,12 @@ const ModalForm = ({
           onSubmit={handleSubmit(onSubmit)}
           className="mx-auto flex w-full flex-col"
         >
-          <div className="mb-8 flex flex-col gap-4">
+          <div className="relative mb-6 flex flex-col gap-5">
+            <FormHoneypot />
             <FormField
               name="name"
               type="text"
-              placeholder={t("formPlaceholder.name")}
+              placeholder={`* ${t("formPlaceholder.name")}`}
               variant="basic"
             />
 
@@ -79,6 +99,18 @@ const ModalForm = ({
               required
               variant="basic"
             />
+
+            <FormField
+              name="email"
+              type="email"
+              placeholder={`* ${t("formPlaceholder.email")}`}
+              required
+              variant="basic"
+            />
+          </div>
+
+          <div className="mb-6">
+            <FormConsent />
           </div>
 
           {priceText && (

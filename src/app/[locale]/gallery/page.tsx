@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
-import GalleryContent from "@/components/galleryPage/GalleryContent";
-import GalleryHero from "@/components/galleryPage/GalleryHero";
+import GalleryView from "@/components/galleryPage/GalleryView";
+import HomeBottomCTA from "@/components/homepage/HomeBottomCTA";
 import { ROUTES } from "@/constants/routes";
 import { generatePageMetadata } from "@/utils/generatePageMetaData";
 import { Locale } from "@/types/locale";
@@ -29,8 +29,8 @@ const GalleryPage = async ({
 
   return (
     <>
-      <GalleryHero />
-      <GalleryContent lang={locale} />
+      <GalleryView lang={locale} />
+      <HomeBottomCTA />
     </>
   );
 };

@@ -1,12 +1,18 @@
 import { notFound } from "next/navigation";
 
-import PublicationContent from "@/components/publicationPage/PublicationContent";
-import PublicationHero from "@/components/publicationPage/PublicationHero";
+import HomeBottomCTA from "@/components/homepage/HomeBottomCTA";
+import ArticleView from "@/components/publications/ArticleView";
+import JsonLd from "@/components/seo/JsonLd";
+import { ORG_ID, PERSON_ID } from "@/components/seo/siteSchema";
 import {
-  // getAllPublicationSlugs,
+  getAllPublications,
   getPublicationBySlug,
 } from "@/lib/sanity/queries/queries";
+import { ROUTES } from "@/constants/routes";
+import { normalizeTitle } from "@/utils/courseImage";
+import { SITE_URL } from "@/utils/getBaseUrl";
 import { getReadingTimeMinutes } from "@/utils/getReadingTimeMinutes";
+import { mapItemToCardProps } from "@/utils/mapItemToCardProps";
 import { Locale } from "@/types/locale";
 
 // export const dynamic = "force-static";
@@ -24,10 +30,21 @@ export async function generateMetadata({
 
   const { title, description, previewImage } = post;
 
+  const path = `${ROUTES.PUBLICATIONS}/${slug}`;
+
   return {
     title: title[locale],
     description: description[locale],
+    alternates: {
+      canonical: `${SITE_URL}/${locale}${path}`,
+      languages: {
+        uk: `${SITE_URL}/uk${path}`,
+        ru: `${SITE_URL}/ru${path}`,
+        "x-default": `${SITE_URL}/uk${path}`,
+      },
+    },
     openGraph: {
+      url: `${SITE_URL}/${locale}${path}`,
       title: title[locale],
       description: description[locale],
       images: previewImage?.url ? [previewImage.url] : [],
@@ -65,25 +82,47 @@ const PublicationPage = async ({
 
   if (!post) return notFound();
 
-  const { title, description, content, gallery, mainImage, mainImageMobile } =
-    post;
+  const { title, description, content, gallery, mainImage } = post;
 
   const readingTime = getReadingTimeMinutes(content, locale);
 
+  const articleLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: title[locale],
+    description: description[locale],
+    image: post.previewImage?.url || mainImage?.url,
+    inLanguage: locale,
+    mainEntityOfPage: `${SITE_URL}/${locale}${ROUTES.PUBLICATIONS}/${slug}`,
+    author: { "@id": PERSON_ID },
+    publisher: { "@id": ORG_ID },
+  };
+
+  const related = (await getAllPublications().catch(() => []))
+    .filter(p => p.slug !== slug)
+    .slice(0, 3)
+    .map(p => {
+      const c = mapItemToCardProps(p, locale);
+      return {
+        href: c.href ?? `/${locale}${ROUTES.PUBLICATIONS}`,
+        title: normalizeTitle(c.title),
+        description: c.description,
+        info: c.info,
+      };
+    });
+
   return (
     <>
-      <PublicationHero
-        title={title[locale]}
+      <JsonLd data={articleLd} />
+      <ArticleView
+        title={normalizeTitle(title[locale] || title.uk)}
         description={description[locale]}
-        mainImage={mainImage}
-        mainImageMobile={mainImageMobile}
         readingTime={readingTime}
-      />
-      <PublicationContent
-        content={content[locale]}
+        content={content[locale]?.length ? content[locale] : content.uk}
         gallery={gallery}
-        title={title[locale]}
+        related={related}
       />
+      <HomeBottomCTA />
     </>
   );
 };

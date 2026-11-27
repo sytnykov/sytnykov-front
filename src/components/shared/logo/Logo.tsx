@@ -3,9 +3,8 @@
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 
-import { cn } from "@/utils/cn";
-
 import { Link } from "@/i18n/navigation";
+import { cn } from "@/utils/cn";
 
 interface LogoProps {
   className?: string;
@@ -25,6 +24,7 @@ const Logo = ({ className, textStyles, variant = "dark" }: LogoProps) => {
           width="40"
           height="41"
           className={cn("h-auto w-[33px] xl:w-10", className)}
+          priority
         />
       ) : (
         <Image
@@ -32,6 +32,7 @@ const Logo = ({ className, textStyles, variant = "dark" }: LogoProps) => {
           alt="logo"
           width="40"
           height="41"
+          priority
           className={cn("h-auto w-[33px] xl:w-10", className)}
         />
       )}
