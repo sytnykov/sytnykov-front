@@ -7,8 +7,8 @@ import Backdrop from "@/components/shared/backdrop/Backdrop";
 import LocaleSwitcher from "@/components/shared/localSwitcher/LocalSwitcher";
 import Logo from "@/components/shared/logo/Logo";
 import { Link, usePathname } from "@/i18n/navigation";
+import type { SiteContacts } from "@/lib/siteSettings";
 import { ROUTES } from "@/constants/routes";
-import { siteConfig } from "@/constants/siteConfig";
 import { cn } from "@/utils/cn";
 
 import BurgerButton from "./BurgerButton";
@@ -29,7 +29,12 @@ const formatPhone = (phone: string) => {
   return `+${d.slice(0, 2)} ${d.slice(2, 5)} ${d.slice(5, 8)} ${d.slice(8, 10)} ${d.slice(10)}`;
 };
 
-const Header = () => {
+/** contacts come from the layout (admin «Налаштування сайту», see lib/siteSettings) */
+const Header = ({
+  contacts,
+}: {
+  contacts: Pick<SiteContacts, "phone" | "socialLinks">;
+}) => {
   const [isNavMenuOpened, setIsNavMenuOpened] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const t = useTranslations("header.nav");
@@ -45,7 +50,7 @@ const Header = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const telHref = `tel:+${siteConfig.phone.replace(/\D/g, "")}`;
+  const telHref = `tel:+${contacts.phone.replace(/\D/g, "")}`;
   // the bar is see-through only on top of the dark home hero
   const isFloating = !isScrolled && pathname === "/";
 
@@ -115,7 +120,7 @@ const Header = () => {
               href={telHref}
               className="hidden whitespace-nowrap text-[14px] font-semibold tabular-nums transition-colors duration-300 hover:text-accent md:block"
             >
-              {formatPhone(siteConfig.phone)}
+              {formatPhone(contacts.phone)}
             </a>
 
             {/* CTA: white pill with a round accent arrow */}
@@ -151,7 +156,11 @@ const Header = () => {
           </div>
         </div>
       </div>
-      <BurgerMenu isOpen={isNavMenuOpened} closeMenu={closeMenu} />
+      <BurgerMenu
+        isOpen={isNavMenuOpened}
+        closeMenu={closeMenu}
+        contacts={contacts}
+      />
       <Backdrop isVisible={isNavMenuOpened} onClick={closeMenu} />
     </header>
   );

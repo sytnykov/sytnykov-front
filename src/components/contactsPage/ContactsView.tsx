@@ -2,7 +2,8 @@ import { getMessages, getTranslations } from "next-intl/server";
 import Image from "next/image";
 
 import { TelegramIcon } from "@/components/shared/icons";
-import { siteConfig } from "@/constants/siteConfig";
+import { getSiteContacts } from "@/lib/siteSettings";
+import GoogleReviewsLink from "@/components/shared/GoogleReviewsLink";
 
 import LineIcon, { Rings } from "../homepage/LineIcon";
 import SectionHead from "../homepage/SectionHead";
@@ -17,14 +18,15 @@ const formatPhone = (phone: string) => {
 /** «Контакти»: every way to reach the lawyer on the first screen + a calm form. */
 const ContactsView = async () => {
   const t = await getTranslations("contactsPage");
+  const contacts = await getSiteContacts();
   const messages = await getMessages();
   const placeholders = messages.contactsPage.feedback
     .formPlaceholder as FormPlaceholderMap;
-  const telHref = `tel:+${siteConfig.phone.replace(/\D/g, "")}`;
-  const telegram = siteConfig.socialLinks.find(
+  const telHref = `tel:+${contacts.phone.replace(/\D/g, "")}`;
+  const telegram = contacts.socialLinks.find(
     s => s.label === "Telegram"
   )?.href;
-  const socials = siteConfig.socialLinks.filter(({ href }) => href !== "#");
+  const socials = contacts.socialLinks.filter(({ href }) => href !== "#");
 
   return (
     <>
@@ -73,16 +75,16 @@ const ContactsView = async () => {
                 href={telHref}
                 className="mt-1 block whitespace-nowrap text-[28px] font-semibold tabular-nums tracking-[-0.01em] transition-colors hover:text-[#9db8ff] md:text-[26px] lg:text-[32px] xl:text-[38px]"
               >
-                {formatPhone(siteConfig.phone)}
+                {formatPhone(contacts.phone)}
               </a>
               <p className="mt-5 text-[13px] font-medium text-white/60">
                 {t("v2.emailLabel")}
               </p>
               <a
-                href={`mailto:${siteConfig.email}`}
+                href={`mailto:${contacts.email}`}
                 className="mt-1 block break-all text-[18px] font-semibold transition-colors hover:text-[#9db8ff] md:text-[22px]"
               >
-                {siteConfig.email}
+                {contacts.email}
               </a>
 
               <div className="mt-7 grid grid-cols-1 gap-3 xl:grid-cols-2">
@@ -107,6 +109,11 @@ const ContactsView = async () => {
                   </a>
                 )}
               </div>
+              <GoogleReviewsLink
+                href={contacts.googleReviewsUrl}
+                label={t("v2.googleReviews")}
+                className="mt-4 text-[15px] font-semibold text-light underline-offset-4 transition-colors duration-300 hover:text-[#9db8ff] hover:underline"
+              />
 
               <div className="mt-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-3 border-t border-white/10 pt-5">
                 <span className="text-[13px] font-medium text-white/60">

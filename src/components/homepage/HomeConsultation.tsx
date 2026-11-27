@@ -3,7 +3,7 @@ import Image from "next/image";
 
 import { TelegramIcon } from "@/components/shared/icons";
 import { APPLICATION } from "@/constants/application";
-import { siteConfig } from "@/constants/siteConfig";
+import { getSiteContacts } from "@/lib/siteSettings";
 
 import ModalTrigger from "../module/modal/ModalTrigger";
 import LineIcon, { LineIconName, Rings } from "./LineIcon";
@@ -26,11 +26,12 @@ const formatPhone = (phone: string) => {
 /** Consultation: offer + services on the left, a composed portrait on the right. */
 const HomeConsultation = async () => {
   const t = await getTranslations("homepage.consultation");
+  const contacts = await getSiteContacts();
   const messages = await getMessages();
   const practice = (
     messages.servicepage.practice.practiceList as string[]
   ).slice(0, 6);
-  const telegram = siteConfig.socialLinks.find(
+  const telegram = contacts.socialLinks.find(
     s => s.label === "Telegram"
   )?.href;
 
@@ -58,11 +59,11 @@ const HomeConsultation = async () => {
               messageFrom={APPLICATION.CONSULTATION}
             />
             <a
-              href={`tel:+${siteConfig.phone.replace(/\D/g, "")}`}
+              href={`tel:+${contacts.phone.replace(/\D/g, "")}`}
               className="flex h-[50px] items-center justify-center gap-2.5 rounded-full border border-white/25 px-6 text-[15px] font-semibold tabular-nums transition-colors duration-300 hover:border-white md:h-[52px]"
             >
               <LineIcon name="phone" className="size-[18px] text-accent" />
-              {formatPhone(siteConfig.phone)}
+              {formatPhone(contacts.phone)}
             </a>
           </div>
           {/* other ways to write; clicks are tracked by Analytics (click_*) */}
@@ -81,11 +82,11 @@ const HomeConsultation = async () => {
               </a>
             )}
             <a
-              href={`mailto:${siteConfig.email}`}
+              href={`mailto:${contacts.email}`}
               className="inline-flex items-center gap-2 break-all transition-colors duration-300 hover:text-accent"
             >
               <LineIcon name="mail" className="size-[18px] text-accent" />
-              {siteConfig.email}
+              {contacts.email}
             </a>
           </div>
           <ul className="mt-8 grid border-t border-white/10 md:mt-10 md:grid-cols-2 md:gap-x-8">

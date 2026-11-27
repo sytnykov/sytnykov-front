@@ -4,8 +4,8 @@ import { useTranslations } from "next-intl";
 
 import LocaleSwitcher from "@/components/shared/localSwitcher/LocalSwitcher";
 import { Link, usePathname } from "@/i18n/navigation";
+import type { SiteContacts } from "@/lib/siteSettings";
 import { ROUTES } from "@/constants/routes";
-import { siteConfig } from "@/constants/siteConfig";
 import { cn } from "@/utils/cn";
 
 import CloseButton from "./CloseButton";
@@ -13,6 +13,7 @@ import CloseButton from "./CloseButton";
 interface BurgerMenuMobTabProps {
   isOpen: boolean;
   closeMenu: () => void;
+  contacts: Pick<SiteContacts, "phone" | "socialLinks">;
 }
 
 const formatPhone = (phone: string) => {
@@ -20,7 +21,7 @@ const formatPhone = (phone: string) => {
   return `+${d.slice(0, 2)} ${d.slice(2, 5)} ${d.slice(5, 8)} ${d.slice(8, 10)} ${d.slice(10)}`;
 };
 
-const BurgerMenu = ({ isOpen, closeMenu }: BurgerMenuMobTabProps) => {
+const BurgerMenu = ({ isOpen, closeMenu, contacts }: BurgerMenuMobTabProps) => {
   const t = useTranslations("header.nav");
   const pathname = usePathname();
 
@@ -35,7 +36,7 @@ const BurgerMenu = ({ isOpen, closeMenu }: BurgerMenuMobTabProps) => {
     { title: t("contacts"), path: ROUTES.CONTACTS },
   ];
 
-  const socials = siteConfig.socialLinks.filter(({ href }) => href !== "#");
+  const socials = contacts.socialLinks.filter(({ href }) => href !== "#");
 
   return (
     <div
@@ -109,10 +110,10 @@ const BurgerMenu = ({ isOpen, closeMenu }: BurgerMenuMobTabProps) => {
           {t("cta")}
         </Link>
         <a
-          href={`tel:+${siteConfig.phone.replace(/\D/g, "")}`}
+          href={`tel:+${contacts.phone.replace(/\D/g, "")}`}
           className="flex h-[50px] items-center justify-center rounded-full border border-white/25 text-[15px] font-semibold tabular-nums transition-colors duration-300 hover:border-white"
         >
-          {formatPhone(siteConfig.phone)}
+          {formatPhone(contacts.phone)}
         </a>
         {socials.length > 0 && (
           <ul className="flex justify-center gap-2 pt-2">

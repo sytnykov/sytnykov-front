@@ -1,5 +1,7 @@
 import { CoursePageData } from "@/lib/sanity/types/courseBlocks";
 
+import { PROGRAM_BLOCK1, PROGRAM_BLOCK1_TITLE } from "./programBlock1";
+
 /*
  * Prototype content for the PM review of the course constructor.
  * Shown only on the preview copy. Prices and reviews are examples:
@@ -228,6 +230,12 @@ export const COURSE_PROTOTYPE: CoursePageData = {
           ],
         },
       ],
+    },
+    // the client's «структура розділу.xlsx», Блок 1 (preview only, like this page)
+    {
+      _type: "courseProgramTreeBlock",
+      _key: k("tree"),
+      program: { title: u(PROGRAM_BLOCK1_TITLE), items: PROGRAM_BLOCK1 },
     },
     {
       _type: "courseFormatBlock",

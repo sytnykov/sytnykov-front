@@ -18,6 +18,7 @@ import Footer from "@/components/module/footer/Footer";
 import Header from "@/components/module/header/Header";
 import JsonLd from "@/components/seo/JsonLd";
 import { siteSchema } from "@/components/seo/siteSchema";
+import { getSiteContacts } from "@/lib/siteSettings";
 import { IS_PREVIEW } from "@/utils/env";
 import { SITE_URL } from "@/utils/getBaseUrl";
 
@@ -64,6 +65,7 @@ export default async function LocaleLayout({
   }
 
   const all = await getMessages();
+  const contacts = await getSiteContacts();
   // Only what client components translate goes to the browser;
   // server components read the full dictionary on the server.
   const CLIENT_NAMESPACES = ["header", "form", "modal", "cookies", "paginator"] as const;
@@ -78,7 +80,9 @@ export default async function LocaleLayout({
         className={`${montserrat.variable} ${micra.variable} relative z-[1] flex min-h-screen flex-col antialiased`}
       >
         <NextIntlClientProvider messages={messages}>
-          <Header />
+          <Header
+            contacts={{ phone: contacts.phone, socialLinks: contacts.socialLinks }}
+          />
           <main className="flex-grow overflow-x-hidden">{children}</main>
           <Footer />
           <script dangerouslySetInnerHTML={{ __html: cookieChoiceScript }} />
@@ -86,7 +90,7 @@ export default async function LocaleLayout({
           <Analytics />
           <LeadTracker />
         </NextIntlClientProvider>
-        <JsonLd data={siteSchema(locale)} />
+        <JsonLd data={siteSchema(locale, contacts)} />
       </body>
     </html>
   );

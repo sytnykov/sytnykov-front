@@ -9,7 +9,9 @@ import FormatBlock from "./FormatBlock";
 import HeroBlock from "./HeroBlock";
 import { GalleryBlock, TextImageBlock, VideoBlock } from "./MediaBlocks";
 import PackagesBlock from "./PackagesBlock";
+import PainsBlock from "./PainsBlock";
 import ProgramBlock from "./ProgramBlock";
+import ProgramTreeBlock from "./ProgramTreeBlock";
 import ResultsBlock from "./ResultsBlock";
 import ReviewsBlock from "./ReviewsBlock";
 import TrainerBlock from "./TrainerBlock";
@@ -84,6 +86,12 @@ const CourseBuilder = ({
             return <TextImageBlock key={block._key} block={block} ctx={ctx} />;
           case "courseGalleryBlock":
             return <GalleryBlock key={block._key} block={block} ctx={ctx} />;
+          case "coursePainsBlock":
+            return <PainsBlock key={block._key} block={block} ctx={ctx} />;
+          case "courseProgramTreeBlock":
+            return (
+              <ProgramTreeBlock key={block._key} block={block} ctx={ctx} />
+            );
           default:
             return null;
         }

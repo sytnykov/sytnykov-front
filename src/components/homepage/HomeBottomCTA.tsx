@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 
+import { getSiteContacts } from "@/lib/siteSettings";
 import { APPLICATION } from "@/constants/application";
 import { ROUTES } from "@/constants/routes";
 
@@ -9,9 +10,19 @@ import ButtonOrLink from "../shared/button/ButtonOrLink ";
 import LineIcon, { Rings } from "./LineIcon";
 import { ArrowIcon } from "./SectionHead";
 
-/** The single closing call to action. */
-const HomeBottomCTA = async () => {
+/**
+ * The closing call to action. On the home page the consultation button is
+ * already in the hero and in the consultation block, so there it is replaced
+ * by a call button (`consultation={false}`).
+ */
+const HomeBottomCTA = async ({
+  consultation = true,
+}: {
+  consultation?: boolean;
+}) => {
   const t = await getTranslations("homepage.final");
+  const tContacts = await getTranslations("contactsPage.v2");
+  const { phone } = await getSiteContacts();
 
   return (
     <section className="bg-[#f3f6fd] md:px-6 md:pb-6">
@@ -43,12 +54,22 @@ const HomeBottomCTA = async () => {
                 {t("button")}
                 <ArrowIcon className="ml-2 size-4" />
               </ButtonOrLink>
-              <ModalTrigger
-                variant="consultation"
-                buttonVariant="transparent"
-                buttonClassName="h-[50px] py-0 md:h-[52px] text-[15px] lg:w-[240px] border-white/35 hover:border-white"
-                messageFrom={APPLICATION.CONSULTATION}
-              />
+              {consultation ? (
+                <ModalTrigger
+                  variant="consultation"
+                  buttonVariant="transparent"
+                  buttonClassName="h-[50px] py-0 md:h-[52px] text-[15px] lg:w-[240px] border-white/35 hover:border-white"
+                  messageFrom={APPLICATION.CONSULTATION}
+                />
+              ) : (
+                <a
+                  href={`tel:+${phone.replace(/\D/g, "")}`}
+                  className="flex h-[50px] items-center justify-center gap-2.5 rounded-full border border-white/35 px-6 text-[15px] font-semibold transition-colors duration-300 hover:border-white md:h-[52px] lg:w-[240px]"
+                >
+                  <LineIcon name="phone" className="size-[18px] text-accent" />
+                  {tContacts("call")}
+                </a>
+              )}
             </div>
           </div>
 

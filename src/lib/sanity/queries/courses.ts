@@ -184,7 +184,8 @@ export const getCoursePage = async (slug: string) => {
           ...,
           "image": image{ "url": asset->url },
           "images": images[]{ "url": asset->url },
-          "reviews": reviews[]{ ..., "photo": photo{ "url": asset->url } }
+          "reviews": reviews[]{ ..., "photo": photo{ "url": asset->url } },
+          _type == "courseProgramTreeBlock" => { "program": program->{ title, items } }
         }
       },
       "trainer": *[_type == "trainer"][0]{

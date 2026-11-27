@@ -102,7 +102,26 @@ export type CourseBlock =
   | FaqBlock
   | VideoBlock
   | TextImageBlock
-  | GalleryBlock;
+  | GalleryBlock
+  | PainsBlock
+  | ProgramTreeBlock;
+
+export type PainsBlock = Base<"coursePainsBlock"> & {
+  items?: { _key: string; title?: L10n; text?: L10n }[];
+};
+
+/** One point of a hierarchical program (тиждень → … → нюанс). */
+export type ProgramNode = {
+  _key: string;
+  title?: L10n;
+  description?: L10n;
+  children?: ProgramNode[];
+};
+
+export type ProgramTreeBlock = Base<"courseProgramTreeBlock"> & {
+  /** null while the referenced program is not published */
+  program?: { title?: L10n; items?: ProgramNode[] } | null;
+};
 
 export type Trainer = {
   name?: L10n;

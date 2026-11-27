@@ -23,7 +23,9 @@ export type PackageView = {
   paymentUrl?: string;
 };
 
+/** features shown before «показати все»: phones / tablets and up */
 const MOBILE_VISIBLE = 3;
+const DESKTOP_VISIBLE = 6;
 
 type Labels = {
   showAll: string;
@@ -118,8 +120,9 @@ const PackageCard = ({
             key={f.text}
             className={cn(
               "flex items-start gap-3 pt-3.5 text-[14px] leading-[1.45] md:text-[15px]",
-              // phones: first items at once, the rest opens on tap
-              idx >= MOBILE_VISIBLE && !open && "max-md:hidden"
+              // first items at once, the rest opens on tap
+              !open && idx >= DESKTOP_VISIBLE && "hidden",
+              !open && idx >= MOBILE_VISIBLE && "max-md:hidden"
             )}
           >
             {f.included ? (
@@ -153,7 +156,9 @@ const PackageCard = ({
           aria-expanded={open}
           onClick={() => setOpen(v => !v)}
           className={cn(
-            "mt-4 flex w-full items-center justify-center gap-2 rounded-[14px] py-2.5 text-[14px] font-semibold md:hidden",
+            "mt-4 flex w-full cursor-pointer items-center justify-center gap-2 rounded-[14px] py-2.5 text-[14px] font-semibold",
+            // tablets and up hide less, so the button is only needed past 6
+            pkg.features.length <= DESKTOP_VISIBLE && "md:hidden",
             hi ? "bg-[#f3f6fd]" : "bg-white/[0.06]"
           )}
         >

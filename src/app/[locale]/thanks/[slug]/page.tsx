@@ -11,7 +11,7 @@ import { checkThanks } from "@/lib/payments/wayforpay";
 import { getCourseThanks } from "@/lib/sanity/queries/courses";
 import { pick } from "@/lib/sanity/types/courseBlocks";
 import { ROUTES } from "@/constants/routes";
-import { siteConfig } from "@/constants/siteConfig";
+import { getSiteContacts } from "@/lib/siteSettings";
 import { normalizeTitle } from "@/utils/courseImage";
 import { IS_PREVIEW } from "@/utils/env";
 import { Locale } from "@/types/locale";
@@ -54,6 +54,7 @@ const ThanksPage = async ({
   const { locale, slug } = await params;
   const { status = "", amount, currency, order, v } = await searchParams;
   const t = await getTranslations("thanks");
+  const contacts = await getSiteContacts();
 
   // the prototype course exists only on the preview copy
   const isPrototype = slug === "prototype" && IS_PREVIEW;
@@ -62,7 +63,7 @@ const ThanksPage = async ({
         title: COURSE_PROTOTYPE.title,
         slug: "prototype",
         category: undefined,
-        telegramGroupUrl: siteConfig.socialLinks.find(
+        telegramGroupUrl: contacts.socialLinks.find(
           s => s.label === "Telegram"
         )?.href,
         flowStart: COURSE_PROTOTYPE.flowStart,
@@ -97,7 +98,7 @@ const ThanksPage = async ({
         { day: "numeric", month: "long", year: "numeric" }
       )
     : null;
-  const telHref = `tel:+${siteConfig.phone.replace(/\D/g, "")}`;
+  const telHref = `tel:+${contacts.phone.replace(/\D/g, "")}`;
 
   const steps = [
     {
@@ -188,7 +189,7 @@ const ThanksPage = async ({
               className="flex h-[54px] items-center justify-center gap-2.5 whitespace-nowrap rounded-full border border-white/25 px-7 text-[15px] font-semibold tabular-nums transition-colors duration-300 hover:border-white"
             >
               <LineIcon name="phone" className="size-[18px] text-accent" />
-              {formatPhone(siteConfig.phone)}
+              {formatPhone(contacts.phone)}
             </a>
           </div>
 
