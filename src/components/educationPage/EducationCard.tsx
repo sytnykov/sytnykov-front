@@ -24,6 +24,9 @@ const EducationCard = ({
   return (
     <Link
       href={`${ROUTES.EDUCATION}/${courseType.slug}/${slug}`}
+      // like the program scheme cards: the list stays open in its tab
+      target="_blank"
+      rel="noopener"
       className="group flex h-full flex-col overflow-hidden rounded-[26px] bg-light shadow-[0_1px_2px_rgba(9,17,41,0.05)] outline-none ring-accent ring-offset-2 transition-[transform,box-shadow] duration-500 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgba(9,17,41,0.45)] focus-visible:ring-2"
     >
       <div className="relative h-[200px] shrink-0 overflow-hidden md:h-[220px]">

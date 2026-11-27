@@ -33,7 +33,7 @@ export const siteConfig = {
       label: "LinkedIn",
     },
     {
-      href: "https://www.youtube.com/channel/UCILC5_pu-ARKQLZA5VJ4YQg",
+      href: "https://www.youtube.com/channel/UClLC5_pu-ARKQLZA5VJ4YQg",
       icon: <YouTubeIcon />,
       label: "YouTube",
     },

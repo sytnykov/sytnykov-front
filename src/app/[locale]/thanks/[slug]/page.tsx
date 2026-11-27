@@ -7,6 +7,7 @@ import LineIcon, { Rings } from "@/components/homepage/LineIcon";
 import { TelegramIcon } from "@/components/shared/icons";
 import PurchaseTracker from "@/components/thanks/PurchaseTracker";
 import { Link } from "@/i18n/navigation";
+import { checkThanks } from "@/lib/payments/wayforpay";
 import { getCourseThanks } from "@/lib/sanity/queries/courses";
 import { pick } from "@/lib/sanity/types/courseBlocks";
 import { ROUTES } from "@/constants/routes";
@@ -25,6 +26,8 @@ type Search = Promise<{
   amount?: string;
   currency?: string;
   order?: string;
+  /** our proof that WayForPay signed an approved payment (api/thanks) */
+  v?: string;
 }>;
 
 const FAILED = [
@@ -49,7 +52,7 @@ const ThanksPage = async ({
   searchParams: Search;
 }) => {
   const { locale, slug } = await params;
-  const { status = "", amount, currency, order } = await searchParams;
+  const { status = "", amount, currency, order, v } = await searchParams;
   const t = await getTranslations("thanks");
 
   // the prototype course exists only on the preview copy
@@ -73,8 +76,20 @@ const ThanksPage = async ({
       ? `${ROUTES.EDUCATION}/${course.category}/${course.slug}`
       : ROUTES.EDUCATION;
   const failed = FAILED.includes(status.toLowerCase());
-  // count a purchase only for a payment WayForPay reported as approved
-  const approved = status.toLowerCase() === "approved";
+  // count a purchase only for a payment WayForPay signed as approved;
+  // a hand-typed ?status=approved still shows the page, without a purchase
+  const approved =
+    status.toLowerCase() === "approved" &&
+    checkThanks(
+      {
+        slug,
+        order: order ?? "",
+        amount: amount ?? "",
+        currency: currency ?? "",
+      },
+      v,
+      process.env.WAYFORPAY_SECRET_KEY
+    );
   const telegram = course?.telegramGroupUrl;
   const start = course?.flowStart
     ? new Date(`${course.flowStart}T00:00:00`).toLocaleDateString(

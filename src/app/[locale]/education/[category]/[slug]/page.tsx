@@ -5,6 +5,7 @@ import CourseBuilder from "@/components/coursePage/builder/CourseBuilder";
 import JsonLd from "@/components/seo/JsonLd";
 import { ORG_ID, PERSON_ID } from "@/components/seo/siteSchema";
 import { getCourseBySlug, getCoursePage } from "@/lib/sanity/queries/courses";
+import { PackagesBlock, pick } from "@/lib/sanity/types/courseBlocks";
 import { ROUTES } from "@/constants/routes";
 import { normalizeTitle } from "@/utils/courseImage";
 import { SITE_URL } from "@/utils/getBaseUrl";
@@ -72,21 +73,47 @@ const CoursePage = async ({ params }: { params: Params }) => {
   }
 
   const { title, description, mainImage, previewImage } = course;
+  const url = `${SITE_URL}/${locale}${coursePath(category, slug)}`;
+  const flowStart = page?.course?.flowStart;
+  const priceValidUntil = page?.course?.priceValidUntil;
+  const salesClosed = flowStart
+    ? new Date(`${flowStart}T23:59:59`).getTime() < Date.now()
+    : false;
+
+  // one Offer per package with a price (constructor courses only)
+  const offers = (page?.course?.sections ?? [])
+    .filter((s): s is PackagesBlock => s._type === "coursePackagesBlock")
+    .flatMap(s => s.packages ?? [])
+    .filter(p => (p.price ?? 0) > 0)
+    .map(p => ({
+      "@type": "Offer",
+      ...(pick(p.name, locale) && { name: pick(p.name, locale) }),
+      category: "Paid",
+      price: p.price,
+      priceCurrency: "UAH",
+      url: `${url}#packages`,
+      availability: salesClosed
+        ? "https://schema.org/SoldOut"
+        : "https://schema.org/InStock",
+      ...(priceValidUntil && { priceValidUntil }),
+    }));
 
   const courseLd = {
     "@context": "https://schema.org",
     "@type": "Course",
     name: title[locale],
     description: description[locale],
-    url: `${SITE_URL}/${locale}${coursePath(category, slug)}`,
+    url,
     inLanguage: locale,
     image: previewImage?.url || mainImage?.url,
     provider: { "@id": ORG_ID },
     instructor: { "@id": PERSON_ID },
+    ...(offers.length && { offers }),
     hasCourseInstance: {
       "@type": "CourseInstance",
       courseMode: "online",
       instructor: { "@id": PERSON_ID },
+      ...(flowStart && { startDate: flowStart }),
     },
   };
 
@@ -112,8 +139,8 @@ const CoursePage = async ({ params }: { params: Params }) => {
           slug,
           category: course.courseType,
           mainImage,
-          flowStart: page?.course?.flowStart,
-          priceValidUntil: page?.course?.priceValidUntil,
+          flowStart,
+          priceValidUntil,
           sections,
           trainer: page?.trainer,
         }}

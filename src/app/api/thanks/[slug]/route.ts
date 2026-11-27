@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { isVerifiedApproval, signThanks } from "@/lib/payments/wayforpay";
+
 /**
  * WayForPay return URL: https://sitnikov.com.ua/api/thanks/<course-slug>
  * WayForPay sends the visitor here with a POST form (status, amount, order).
  * We turn it into a normal page address so the browser can show
  * /uk/thanks/<course-slug> and the address can be refreshed safely.
+ *
+ * A purchase is counted only for a result signed by WayForPay (see
+ * lib/payments/wayforpay): then the page address gets our proof `v`.
  */
 const SAFE = /^[a-z0-9-]{1,120}$/;
 
@@ -34,6 +39,23 @@ const toPage = async (
   const order = data.get("orderReference");
   if (order && /^[\w.-]{1,64}$/.test(order))
     target.searchParams.set("order", order);
+
+  const secret = process.env.WAYFORPAY_SECRET_KEY;
+  if (secret && SAFE.test(slug) && isVerifiedApproval(data, secret)) {
+    const p = target.searchParams;
+    p.set(
+      "v",
+      signThanks(
+        {
+          slug,
+          order: p.get("order") ?? "",
+          amount: p.get("amount") ?? "",
+          currency: p.get("currency") ?? "",
+        },
+        secret
+      )
+    );
+  }
 
   // 303: the browser follows with GET
   return NextResponse.redirect(target, 303);
