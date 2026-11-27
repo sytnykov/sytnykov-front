@@ -6,16 +6,33 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { ROUTES } from "@/constants/routes";
 
-import { OPEN_SETTINGS_EVENT, readConsent, saveConsent } from "./consent";
+import {
+  CHOICE_ATTRIBUTE,
+  OPEN_SETTINGS_EVENT,
+  readConsent,
+  saveConsent,
+} from "./consent";
 
-/** Cookie consent: analytics loads only after "Accept". */
+/**
+ * Cookie consent: analytics loads only after "Accept".
+ *
+ * The banner is part of the server HTML, so a first-time visitor sees it with
+ * the first paint instead of after the scripts load (on phones it is the
+ * largest text block of some pages, and a late banner was their LCP). For a
+ * visitor who has already chosen, the inline script in the layout marks
+ * <html data-cookie-choice> before the banner is parsed and CSS keeps it
+ * hidden until React removes it.
+ */
 const CookieBanner = () => {
   const t = useTranslations("cookies");
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
 
   useEffect(() => {
-    if (!readConsent()) setOpen(true);
-    const reopen = () => setOpen(true);
+    if (readConsent()) setOpen(false);
+    const reopen = () => {
+      document.documentElement.removeAttribute(CHOICE_ATTRIBUTE);
+      setOpen(true);
+    };
     window.addEventListener(OPEN_SETTINGS_EVENT, reopen);
     return () => window.removeEventListener(OPEN_SETTINGS_EVENT, reopen);
   }, []);
@@ -32,7 +49,8 @@ const CookieBanner = () => {
       role="dialog"
       aria-live="polite"
       aria-label={t("title")}
-      className="fixed inset-x-3 bottom-3 z-[120] md:inset-x-auto md:bottom-6 md:left-6 md:w-[420px]"
+      data-nosnippet
+      className="cookie-banner fixed inset-x-3 bottom-3 z-[120] md:inset-x-auto md:bottom-6 md:left-6 md:w-[420px]"
     >
       <div className="rounded-[24px] bg-dark p-5 text-light shadow-[0_30px_60px_-20px_rgba(0,0,0,0.7),inset_0_0_0_1px_rgba(255,255,255,0.1)] md:p-6">
         <div className="flex items-start gap-3">

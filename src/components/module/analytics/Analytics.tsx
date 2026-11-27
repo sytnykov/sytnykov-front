@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Script from "next/script";
 
-import { track } from "@/lib/analytics/track";
+import { TRACK_EVENT, track } from "@/lib/analytics/track";
 import { IS_PREVIEW } from "@/utils/env";
 
 import {
@@ -43,6 +43,80 @@ gtag('consent', 'default', {
 });
 `;
 
+/**
+ * The GTM container (~200 KB) is fetched once the page itself has finished
+ * loading, or at the visitor's first tap, key press or scroll if that comes
+ * earlier, so it does not compete with the first screen on a phone.
+ * Nothing is lost: the consent defaults above are already in the dataLayer,
+ * and every event pushed before the container arrives is processed, in order,
+ * as soon as it does. An analytics event (track) also starts it at once.
+ */
+const FIRST_INPUT_EVENTS = ["pointerdown", "keydown", "touchstart", "scroll"];
+
+const useGtm = (id: string) => {
+  useEffect(() => {
+    if (!id) return;
+
+    let started = false;
+    let cancelled = false;
+    let timer = 0;
+    const options = { capture: true, passive: true } as const;
+
+    const start = () => {
+      if (started || cancelled) return;
+      // the consent defaults (inline script below) always go in first
+      if (typeof window.gtag !== "function") {
+        window.clearTimeout(timer);
+        timer = window.setTimeout(start, 50);
+        return;
+      }
+      started = true;
+      cleanup();
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ "gtm.start": Date.now(), event: "gtm.js" });
+      const script = document.createElement("script");
+      script.async = true;
+      script.src = `https://www.googletagmanager.com/gtm.js?id=${id}`;
+      document.head.appendChild(script);
+    };
+
+    // after "load": let the browser finish what it is painting first
+    const whenIdle = () => {
+      if (typeof window.requestIdleCallback === "function") {
+        window.requestIdleCallback(start, { timeout: 2000 });
+      } else {
+        timer = window.setTimeout(start, 200);
+      }
+    };
+
+    const cleanup = () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("load", whenIdle);
+      window.removeEventListener(TRACK_EVENT, start);
+      FIRST_INPUT_EVENTS.forEach(type =>
+        window.removeEventListener(type, start, options)
+      );
+    };
+
+    FIRST_INPUT_EVENTS.forEach(type =>
+      window.addEventListener(type, start, options)
+    );
+    window.addEventListener(TRACK_EVENT, start);
+    // an event is already waiting (e.g. "purchase" on the thank-you page)
+    const hasEvent = (window.dataLayer || []).some(
+      entry => !!entry && typeof entry === "object" && "event" in entry
+    );
+    if (hasEvent) start();
+    else if (document.readyState === "complete") whenIdle();
+    else window.addEventListener("load", whenIdle);
+
+    return () => {
+      cancelled = true;
+      cleanup();
+    };
+  }, [id]);
+};
+
 /** Clicks on phone, Telegram and e-mail links become analytics events. */
 const useContactClicks = () => {
   useEffect(() => {
@@ -64,6 +138,7 @@ const useContactClicks = () => {
 const Analytics = () => {
   const [consent, setConsent] = useState<Consent | null>(null);
   useContactClicks();
+  useGtm(ENABLED ? GTM_ID : "");
 
   useEffect(() => {
     setConsent(readConsent());
@@ -81,22 +156,17 @@ const Analytics = () => {
         {consentDefaults}
       </Script>
 
-      {GTM_ID ? (
-        <Script id="gtm" strategy="afterInteractive">
-          {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${GTM_ID}');`}
-        </Script>
-      ) : (
-        GA_ID && (
-          <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-              strategy="afterInteractive"
-            />
-            <Script id="ga4" strategy="afterInteractive">
-              {`gtag('js', new Date()); gtag('config', '${GA_ID}');`}
-            </Script>
-          </>
-        )
+      {/* the GTM container itself is added by useGtm */}
+      {!GTM_ID && GA_ID && (
+        <>
+          <Script
+            src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+            strategy="afterInteractive"
+          />
+          <Script id="ga4" strategy="afterInteractive">
+            {`gtag('js', new Date()); gtag('config', '${GA_ID}');`}
+          </Script>
+        </>
       )}
 
       {/* Clarity sets its own cookies, so it waits for consent.

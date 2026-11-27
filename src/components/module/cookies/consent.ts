@@ -3,6 +3,15 @@ export const CONSENT_KEY = "sitnikov-consent";
 export const OPEN_SETTINGS_EVENT = "sitnikov:open-cookie-settings";
 export const CONSENT_CHANGED_EVENT = "sitnikov:consent-changed";
 
+/** Set on <html> before first paint when a choice is already stored. */
+export const CHOICE_ATTRIBUTE = "data-cookie-choice";
+
+/**
+ * Runs inline, before the banner is parsed: a returning visitor never sees
+ * the server-rendered banner flash.
+ */
+export const cookieChoiceScript = `try{if(localStorage.getItem("${CONSENT_KEY}"))document.documentElement.setAttribute("${CHOICE_ATTRIBUTE}","")}catch(e){}`;
+
 export type Consent = { analytics: boolean; ts: number };
 
 export const readConsent = (): Consent | null => {

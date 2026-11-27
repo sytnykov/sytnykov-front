@@ -87,6 +87,7 @@ const AboutHero = async () => {
                 alt={tHero("imgAlt")}
                 fill
                 priority
+                fetchPriority="high"
                 sizes="(min-width: 1280px) 460px, (min-width: 768px) 40vw, 92vw"
                 className="object-cover object-[62%_50%]"
               />

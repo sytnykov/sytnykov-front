@@ -27,6 +27,8 @@ interface IModalFormProps {
   priceText?: string;
   course?: string;
   openResponseDialog: (success: boolean) => void;
+  /** start of the "time to fill in" count; defaults to the form's own mount */
+  startedAt?: number;
 }
 
 const ModalForm = ({
@@ -36,9 +38,10 @@ const ModalForm = ({
   course,
   messageFrom,
   openResponseDialog,
+  startedAt,
 }: IModalFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const openedAt = useRef(Date.now());
+  const openedAt = useRef(startedAt ?? Date.now());
 
   const t = useTranslations("form");
 
