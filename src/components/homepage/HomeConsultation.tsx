@@ -1,6 +1,7 @@
 import { getMessages, getTranslations } from "next-intl/server";
 import Image from "next/image";
 
+import { TelegramIcon } from "@/components/shared/icons";
 import { APPLICATION } from "@/constants/application";
 import { siteConfig } from "@/constants/siteConfig";
 
@@ -29,6 +30,9 @@ const HomeConsultation = async () => {
   const practice = (
     messages.servicepage.practice.practiceList as string[]
   ).slice(0, 6);
+  const telegram = siteConfig.socialLinks.find(
+    s => s.label === "Telegram"
+  )?.href;
 
   return (
     <section className="relative isolate overflow-hidden bg-dark py-14 text-light md:py-20 xl:py-[100px]">
@@ -59,6 +63,29 @@ const HomeConsultation = async () => {
             >
               <LineIcon name="phone" className="size-[18px] text-accent" />
               {formatPhone(siteConfig.phone)}
+            </a>
+          </div>
+          {/* other ways to write; clicks are tracked by Analytics (click_*) */}
+          <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-[15px] font-medium text-white/80">
+            {telegram && (
+              <a
+                href={telegram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 transition-colors duration-300 hover:text-accent"
+              >
+                <span className="size-[18px] text-accent [&_svg]:size-[18px]">
+                  <TelegramIcon />
+                </span>
+                Telegram
+              </a>
+            )}
+            <a
+              href={`mailto:${siteConfig.email}`}
+              className="inline-flex items-center gap-2 break-all transition-colors duration-300 hover:text-accent"
+            >
+              <LineIcon name="mail" className="size-[18px] text-accent" />
+              {siteConfig.email}
             </a>
           </div>
           <ul className="mt-8 grid border-t border-white/10 md:mt-10 md:grid-cols-2 md:gap-x-8">

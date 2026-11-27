@@ -196,6 +196,11 @@ export const getAllAnnouncements = async (): Promise<AnnouncementItem[]> => {
       title,
       description,
       startDate,
+      eventType,
+      format,
+      place,
+      price,
+      registrationUrl,
       previewImage{
          "url": asset->url
         },

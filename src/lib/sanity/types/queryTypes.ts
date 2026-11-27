@@ -16,4 +16,10 @@ export type AnnouncementItem = {
   previewImage?: SanityImage;
   description: LocalizedString;
   startDate: string;
+  eventType?: "webinar" | "saturday-school" | "course-start" | "other";
+  format?: "online" | "offline";
+  place?: string;
+  /** UAH; 0 = free, undefined = not shown */
+  price?: number;
+  registrationUrl?: string;
 };

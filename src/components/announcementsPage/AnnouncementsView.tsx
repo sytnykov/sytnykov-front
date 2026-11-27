@@ -1,12 +1,15 @@
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 
+import JsonLd from "@/components/seo/JsonLd";
+import { ORG_ID, PERSON_ID } from "@/components/seo/siteSchema";
 import { Link } from "@/i18n/navigation";
 import { getAllAnnouncements } from "@/lib/sanity/queries/queries";
 import { AnnouncementItem } from "@/lib/sanity/types/queryTypes";
 import { ROUTES } from "@/constants/routes";
 import { siteConfig } from "@/constants/siteConfig";
 import { cn } from "@/utils/cn";
+import { SITE_URL } from "@/utils/getBaseUrl";
 import { Locale } from "@/types/locale";
 
 import LineIcon, { Rings } from "../homepage/LineIcon";
@@ -54,6 +57,91 @@ const dateParts = (iso: string, lang: Locale) => {
 const sentence = (s: string) =>
   s === s.toUpperCase() ? s.charAt(0) + s.slice(1).toLowerCase() : s;
 
+type Labels = {
+  soon: string;
+  done: string;
+  start: string;
+  register: string;
+  free: string;
+  price: (price: number) => string;
+  online: string;
+  offline: string;
+  types: Record<NonNullable<AnnouncementItem["eventType"]>, string>;
+};
+
+/** "Суботня школа · Онлайн · Безкоштовно": only what the admin filled in. */
+const eventMeta = (item: AnnouncementItem, labels: Labels) =>
+  [
+    item.eventType && labels.types[item.eventType],
+    item.format && labels[item.format],
+    item.price === 0
+      ? labels.free
+      : item.price
+        ? labels.price(item.price)
+        : undefined,
+  ].filter((v): v is string => !!v);
+
+const RegisterLink = ({
+  href,
+  label,
+  className,
+}: {
+  href: string;
+  label: string;
+  className: string;
+}) => (
+  <a
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    className={className}
+  >
+    <LineIcon name="calendar" className="size-[18px]" />
+    {label}
+  </a>
+);
+
+/** schema.org Event for every announcement (all have a start date). */
+const eventLd = (item: AnnouncementItem, lang: Locale) => {
+  const pageUrl = `${SITE_URL}/${lang}${ROUTES.ANNOUNCEMENTS}`;
+  const online = item.format === "online";
+  const offline = item.format === "offline";
+  return {
+    "@type": "Event",
+    name: sentence(item.title[lang] || item.title.uk),
+    description: item.description[lang] || item.description.uk,
+    startDate: item.startDate,
+    eventStatus: "https://schema.org/EventScheduled",
+    ...(online && {
+      eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+      location: {
+        "@type": "VirtualLocation",
+        url: item.registrationUrl || pageUrl,
+      },
+    }),
+    ...(offline && {
+      eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+      ...(item.place && {
+        location: { "@type": "Place", name: item.place, address: item.place },
+      }),
+    }),
+    ...(item.previewImage?.url && { image: [item.previewImage.url] }),
+    organizer: { "@id": ORG_ID },
+    performer: { "@id": PERSON_ID },
+    ...(item.price !== undefined &&
+      item.price !== null && {
+        isAccessibleForFree: item.price === 0,
+        offers: {
+          "@type": "Offer",
+          price: item.price,
+          priceCurrency: "UAH",
+          url: item.registrationUrl || pageUrl,
+          availability: "https://schema.org/InStock",
+        },
+      }),
+  };
+};
+
 const EventCard = ({
   item,
   lang,
@@ -63,9 +151,10 @@ const EventCard = ({
   item: AnnouncementItem;
   lang: Locale;
   upcoming: boolean;
-  labels: { soon: string; done: string; start: string };
+  labels: Labels;
 }) => {
   const p = dateParts(item.startDate, lang);
+  const meta = eventMeta(item, labels);
   return (
     <article className="flex h-full flex-col rounded-[24px] bg-white p-5 shadow-[0_1px_2px_rgba(9,17,41,0.05)] transition-shadow duration-300 hover:shadow-[0_24px_48px_-28px_rgba(9,17,41,0.35)] md:p-6">
       <div className="flex items-start justify-between gap-4">
@@ -102,7 +191,24 @@ const EventCard = ({
           />
         </div>
       )}
-      <h3 className="mt-5 text-pretty text-[19px] font-semibold leading-[1.3] text-dark md:text-[20px]">
+      {meta.length > 0 && (
+        <p className="mt-5 flex flex-wrap gap-1.5">
+          {meta.map(m => (
+            <span
+              key={m}
+              className="rounded-full bg-[#f3f6fd] px-3 py-1 text-[12px] font-medium text-dark/75"
+            >
+              {m}
+            </span>
+          ))}
+        </p>
+      )}
+      <h3
+        className={cn(
+          "text-pretty text-[19px] font-semibold leading-[1.3] text-dark md:text-[20px]",
+          meta.length ? "mt-3" : "mt-5"
+        )}
+      >
         {sentence(item.title[lang])}
       </h3>
       <p className="mb-5 mt-2 text-pretty text-[15px] leading-[1.55] text-dark/65">
@@ -118,6 +224,13 @@ const EventCard = ({
           {labels.start} {p.time}
         </span>
       </p>
+      {upcoming && item.registrationUrl && (
+        <RegisterLink
+          href={item.registrationUrl}
+          label={labels.register}
+          className="mt-4 flex h-[46px] items-center justify-center gap-2 rounded-full bg-accent-strong px-5 text-[15px] font-semibold text-light transition-colors duration-300 hover:bg-[#2f5fe0]"
+        />
+      )}
     </article>
   );
 };
@@ -135,15 +248,35 @@ const AnnouncementsView = async ({ lang }: { lang: Locale }) => {
   const telegram = siteConfig.socialLinks.find(
     s => s.label === "Telegram"
   )?.href;
-  const labels = {
+  const labels: Labels = {
     soon: t("v2.soon"),
     done: t("v2.done"),
     start: t("v2.start"),
+    register: t("v2.register"),
+    free: t("v2.free"),
+    price: price => t("v2.price", { price }),
+    online: t("v2.online"),
+    offline: t("v2.offline"),
+    types: {
+      webinar: t("v2.types.webinar"),
+      "saturday-school": t("v2.types.saturday-school"),
+      "course-start": t("v2.types.course-start"),
+      other: t("v2.types.other"),
+    },
   };
   const np = next && dateParts(next.startDate, lang);
+  const nextMeta = next ? eventMeta(next, labels) : [];
 
   return (
     <>
+      {list.length > 0 && (
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@graph": list.map(a => eventLd(a, lang)),
+          }}
+        />
+      )}
       <section className="relative isolate overflow-hidden bg-dark text-light">
         <div
           aria-hidden
@@ -181,7 +314,7 @@ const AnnouncementsView = async ({ lang }: { lang: Locale }) => {
               {next && np ? (
                 <>
                   <p className="mt-6 text-[14px] font-medium text-[#c9d8ff]">
-                    {np.full} · {np.time}
+                    {[np.full, np.time, ...nextMeta].join(" · ")}
                   </p>
                   <h2 className="mt-2 text-balance text-[24px] font-semibold leading-[1.25] md:text-[28px]">
                     {sentence(next.title[lang])}
@@ -200,7 +333,19 @@ const AnnouncementsView = async ({ lang }: { lang: Locale }) => {
                   </p>
                 </>
               )}
-              <div className="mt-7 grid grid-cols-1 gap-3 xl:grid-cols-2">
+              {next?.registrationUrl && (
+                <RegisterLink
+                  href={next.registrationUrl}
+                  label={labels.register}
+                  className="mt-7 flex h-[52px] items-center justify-center gap-2.5 rounded-full bg-light px-5 text-[16px] font-semibold text-dark transition-colors duration-300 hover:bg-[#dfe8ff]"
+                />
+              )}
+              <div
+                className={cn(
+                  "grid grid-cols-1 gap-3 xl:grid-cols-2",
+                  next?.registrationUrl ? "mt-3" : "mt-7"
+                )}
+              >
                 {telegram && (
                   <a
                     href={telegram}
