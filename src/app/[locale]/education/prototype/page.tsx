@@ -6,6 +6,7 @@ import { COURSE_PROTOTYPE } from "@/data/coursePrototype";
 
 import CourseBuilder from "@/components/coursePage/builder/CourseBuilder";
 import PrototypeNote from "@/components/coursePage/builder/PrototypeNote";
+import { IS_PREVIEW } from "@/utils/env";
 import { Locale } from "@/types/locale";
 
 export const metadata: Metadata = {
@@ -19,7 +20,7 @@ const CoursePrototypePage = async ({
 }: {
   params: Promise<{ locale: Locale }>;
 }) => {
-  if (process.env.NEXT_PUBLIC_NOINDEX !== "1") notFound();
+  if (!IS_PREVIEW) notFound();
   const { locale } = await params;
   const t = await getTranslations("courseBuilder");
 

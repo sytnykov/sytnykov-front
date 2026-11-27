@@ -1,3 +1,5 @@
+import { getLeadContext } from "@/lib/analytics/attribution";
+
 export interface TelegramFormData {
   name: string;
   phone: string;
@@ -20,6 +22,8 @@ const sendTelegramMessage = async (
       body: JSON.stringify({
         ...data,
         page: typeof window !== "undefined" ? window.location.pathname : "",
+        // where the visitor came from and what they looked at (see attribution.ts)
+        lead: getLeadContext(),
       }),
     });
 

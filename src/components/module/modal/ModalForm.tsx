@@ -10,7 +10,9 @@ import useModalFormSchema, {
 } from "@/schemas/useModalFormSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { getSessionTouch } from "@/lib/analytics/attribution";
 import { track } from "@/lib/analytics/track";
+import { leadEventParams } from "@/lib/leads/context";
 import sendTelegramMessage from "@/lib/telegram/sendTelegramMessage";
 
 import ButtonOrLink from "../../shared/button/ButtonOrLink ";
@@ -59,7 +61,11 @@ const ModalForm = ({
     });
 
     if (success) {
-      track("generate_lead", { form_type: messageFrom, course: course || "" });
+      track("generate_lead", {
+        form_type: messageFrom,
+        course: course || "",
+        ...leadEventParams(getSessionTouch()),
+      });
     }
 
     setIsLoading(false);

@@ -11,6 +11,7 @@ import { Link } from "@/i18n/navigation";
 import { getLegalPage } from "@/lib/sanity/queries/legal";
 import { LEGAL_PAGES, LegalSlug, legalPath } from "@/constants/legal";
 import { siteConfig } from "@/constants/siteConfig";
+import { IS_PREVIEW } from "@/utils/env";
 import { generatePageMetadata } from "@/utils/generatePageMetaData";
 import { Locale } from "@/types/locale";
 
@@ -21,7 +22,7 @@ import { Locale } from "@/types/locale";
  * use already have final texts (the client's former /privacy and /terms
  * pages), so those are shown instead.
  */
-const SHOW_DRAFTS = process.env.NEXT_PUBLIC_NOINDEX === "1";
+const SHOW_DRAFTS = IS_PREVIEW;
 const PENDING: Record<Locale, string> = {
   uk: "Документ готується до публікації. Якщо він потрібен вам зараз, напишіть нам:",
   ru: "Документ готовится к публикации. Если он нужен вам сейчас, напишите нам:",

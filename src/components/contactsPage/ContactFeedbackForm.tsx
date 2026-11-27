@@ -10,7 +10,9 @@ import useFeedbackFormSchema, {
 } from "@/schemas/useFeedbackFormSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { getSessionTouch } from "@/lib/analytics/attribution";
 import { track } from "@/lib/analytics/track";
+import { leadEventParams } from "@/lib/leads/context";
 import sendTelegramMessage from "@/lib/telegram/sendTelegramMessage";
 import { APPLICATION } from "@/constants/application";
 
@@ -53,7 +55,10 @@ const ContactFeedbackForm = ({
     });
 
     if (success) {
-      track("generate_lead", { form_type: APPLICATION.CONTACTS });
+      track("generate_lead", {
+        form_type: APPLICATION.CONTACTS,
+        ...leadEventParams(getSessionTouch()),
+      });
       reset();
     }
     setStatus(success ? "ok" : "error");

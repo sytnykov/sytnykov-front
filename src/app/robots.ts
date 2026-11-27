@@ -1,10 +1,11 @@
 import type { MetadataRoute } from "next";
 
+import { IS_PREVIEW } from "@/utils/env";
 import { SITE_URL } from "@/utils/getBaseUrl";
 
 /** Search and AI crawlers welcome; preview copies are closed completely. */
 export default function robots(): MetadataRoute.Robots {
-  if (process.env.NEXT_PUBLIC_NOINDEX === "1") {
+  if (IS_PREVIEW) {
     return { rules: [{ userAgent: "*", disallow: "/" }] };
   }
 

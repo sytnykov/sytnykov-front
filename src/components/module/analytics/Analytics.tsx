@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Script from "next/script";
 
 import { track } from "@/lib/analytics/track";
+import { IS_PREVIEW } from "@/utils/env";
 
 import {
   CONSENT_CHANGED_EVENT,
@@ -22,12 +23,10 @@ const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_ID || "zfioiskill";
 const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "";
 
 /**
- * Preview copies (NEXT_PUBLIC_NOINDEX=1) never send data to the client's
- * analytics unless NEXT_PUBLIC_ANALYTICS_DEBUG=1.
+ * Preview copies (see IS_PREVIEW) never send data to the client's analytics
+ * unless NEXT_PUBLIC_ANALYTICS_DEBUG=1.
  */
-const ENABLED =
-  process.env.NEXT_PUBLIC_NOINDEX !== "1" ||
-  process.env.NEXT_PUBLIC_ANALYTICS_DEBUG === "1";
+const ENABLED = !IS_PREVIEW || process.env.NEXT_PUBLIC_ANALYTICS_DEBUG === "1";
 
 /** Consent Mode v2 defaults: everything denied until the visitor accepts. */
 const consentDefaults = `

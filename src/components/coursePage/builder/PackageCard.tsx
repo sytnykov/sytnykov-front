@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 
+import { getSessionTouch } from "@/lib/analytics/attribution";
 import { track } from "@/lib/analytics/track";
+import { leadEventParams } from "@/lib/leads/context";
 import { APPLICATION } from "@/constants/application";
 import { cn } from "@/utils/cn";
 
@@ -187,6 +189,7 @@ const PackageCard = ({
                 package: pkg.name,
                 value: pkg.priceValue,
                 currency: "UAH",
+                ...leadEventParams(getSessionTouch()),
               })
             }
             className={cn(

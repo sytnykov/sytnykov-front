@@ -1,5 +1,8 @@
 import { createClient } from "@sanity/client";
 
+import { formatLeadContext, parseLeadContext } from "@/lib/leads/context";
+import { IS_PREVIEW } from "@/utils/env";
+
 type Payload = {
   name?: string;
   phone?: string;
@@ -12,6 +15,8 @@ type Payload = {
   company?: string;
   /** ms between opening the form and sending it */
   elapsed?: number;
+  /** visit attribution from the browser, untrusted (see lib/leads/context) */
+  lead?: unknown;
 };
 
 const MIN_FILL_TIME_MS = 2500;
@@ -76,15 +81,20 @@ export async function POST(req: Request): Promise<Response> {
     return fail("Invalid form data", 422);
   }
 
+  const context = parseLeadContext(body.lead);
+  const attribution = context ? formatLeadContext(context) : [];
+
   const lines = [
-    `💬 ${source || "Заявка з сайту"}:`,
+    `🆕 Заявка: ${source || "з сайту"}${course ? ` — ${course}` : ""}`,
     `👤 Ім'я: ${name}`,
     `📞 Телефон: ${phone}`,
-    `✉️ E-mail: ${email || "-"}`,
-    `📝 Повідомлення: ${message || "-"}`,
   ];
-  if (course) lines.push(`🎓 Курс: ${course}`);
+  if (email) lines.push(`✉️ E-mail: ${email}`);
+  if (message) lines.push(`📝 Повідомлення: ${message}`);
   if (page) lines.push(`🔗 Сторінка: ${page}`);
+  lines.push(...attribution);
+  // Preview copies share the client's chat and admin: say it is a test.
+  if (IS_PREVIEW) lines.unshift("🧪 ТЕСТ з превʼю-копії сайту, не обробляти");
 
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
@@ -101,7 +111,16 @@ export async function POST(req: Request): Promise<Response> {
       : Promise.reject(
           new Error("Missing TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID")
         ),
-    saveToAdmin({ name, phone, email, message, course, source, page }),
+    saveToAdmin({
+      name,
+      phone,
+      email,
+      message,
+      course,
+      source: IS_PREVIEW ? `ТЕСТ · ${source}` : source,
+      page,
+      attribution: attribution.map(l => l.replace(/^— /, "")).join("\n"),
+    }),
   ]);
 
   if (telegram.status === "rejected") console.error(telegram.reason);

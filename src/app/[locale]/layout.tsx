@@ -11,11 +11,13 @@ import { Locale } from "@/types/locale";
 import "./globals.css";
 
 import Analytics from "@/components/module/analytics/Analytics";
+import LeadTracker from "@/components/module/analytics/LeadTracker";
 import CookieBanner from "@/components/module/cookies/CookieBanner";
 import Footer from "@/components/module/footer/Footer";
 import Header from "@/components/module/header/Header";
 import JsonLd from "@/components/seo/JsonLd";
 import { siteSchema } from "@/components/seo/siteSchema";
+import { IS_PREVIEW } from "@/utils/env";
 import { SITE_URL } from "@/utils/getBaseUrl";
 
 export const metadata: Metadata = {
@@ -24,7 +26,7 @@ export const metadata: Metadata = {
   description:
     "Курси для адвокатів і юристів та консультації адвоката у публічно-правових спорах.",
   // Preview copies (e.g. *.vercel.app) must never be indexed.
-  ...(process.env.NEXT_PUBLIC_NOINDEX === "1" && {
+  ...(IS_PREVIEW && {
     robots: { index: false, follow: false },
   }),
 };
@@ -80,6 +82,7 @@ export default async function LocaleLayout({
           <Footer />
           <CookieBanner />
           <Analytics />
+          <LeadTracker />
         </NextIntlClientProvider>
         <JsonLd data={siteSchema(locale)} />
       </body>
